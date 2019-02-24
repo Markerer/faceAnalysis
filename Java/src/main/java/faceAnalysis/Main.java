@@ -11,6 +11,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import view.UI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
@@ -25,8 +26,13 @@ public class Main {
 
 	private static final String faceAttributes = "age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
 
+	@SuppressWarnings("restriction")
 	public static void main(String[] args) {
 		
+		UI userInterface = new UI();
+		
+		userInterface.go(args);
+		/*
 		HttpClient httpclient = HttpClientBuilder.create().build();
 		
 		try
@@ -90,7 +96,7 @@ public class Main {
 		    // Display error message.
 		    System.out.println(e.getMessage());
 		}
-		
+		*/
 	}
 
 }
