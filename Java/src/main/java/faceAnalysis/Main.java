@@ -12,7 +12,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.microsoft.azure.cognitiveservices.vision.faceapi.implementation.PersonGroupPersonsImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 
 public class Main {
 
@@ -27,7 +28,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		HttpClient httpclient = HttpClientBuilder.create().build();
-
+		
 		try
 		{
 		    URIBuilder builder = new URIBuilder(uriBase);
@@ -54,20 +55,34 @@ public class Main {
 		    HttpEntity entity = response.getEntity();
 		    if (entity != null)
 		    {
+		    	DetectedFace[] detectedFaces = new DetectedFace[2];
+		    	ObjectMapper mapper = new ObjectMapper();
+		    	
 		        // Format and display the JSON response.
 		        System.out.println("REST Response:\n");
-
+		        
 		        String jsonString = EntityUtils.toString(entity).trim();
+		        // amennyiben ezzel kezdõdik, akkor az tömb...
 		        if (jsonString.charAt(0) == '[') {
 		            JSONArray jsonArray = new JSONArray(jsonString);
+		            
+		            // így egy rendes objektumba rakhatjuk...
+		            detectedFaces = mapper.readValue(jsonString, DetectedFace[].class);
+		           
 		            System.out.println(jsonArray.toString(2));
 		        }
+		        // amennyiben ezzel kezdõdik, akkor az csak egy objektum...
 		        else if (jsonString.charAt(0) == '{') {
 		            JSONObject jsonObject = new JSONObject(jsonString);
+		            detectedFaces[1] = mapper.readValue(jsonString, DetectedFace.class);
+		            
+		            
 		            System.out.println(jsonObject.toString(2));
 		        } else {
 		            System.out.println(jsonString);
 		        }
+		        System.out.println(detectedFaces[0].faceAttributes().age() + "\t" + detectedFaces[0].faceRectangle().top());
+		        
 		    }
 		}
 		catch (Exception e)
