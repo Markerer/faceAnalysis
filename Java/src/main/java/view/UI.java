@@ -3,12 +3,15 @@ package view;
 import javafx.geometry.*;
 import javafx.stage.Screen;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
+
+import interfaces.ImageListener;
 import javafx.scene.image.*;
 
 import javafx.application.Application;
@@ -21,16 +24,28 @@ import javafx.stage.*;
 import javafx.scene.text.*;
 
 
+
 @SuppressWarnings("restriction")
 public class UI extends Application {
+
+	ImageView imageView;
+	Label description;
 	
-	private Desktop desktop = Desktop.getDesktop();
+	DetectedFace detectedFace;
+	
+	File img;
+	
+	private List<ImageListener> listeners = new ArrayList<ImageListener>();
+	
+	 public void addListener(ImageListener toAdd) {
+	        listeners.add(toAdd);
+	    }
     
     @Override
     public void start(final Stage primaryStage) {
     	
-    	final ImageView imageView = new ImageView();
-    	final Label description = new Label();
+    	imageView = new ImageView();
+    	description = new Label();
         primaryStage.setTitle("Face Analysis");
         
         final FileChooser fileChooser = new FileChooser();
@@ -38,22 +53,37 @@ public class UI extends Application {
 
         
         MenuBar menuBar = new MenuBar();
-        Menu menuFile = new Menu("F·jl");
-        Menu menuActions = new Menu("LehetısÈgek");
+        Menu menuFile = new Menu("F√°jl");
+        Menu menuActions = new Menu("Lehet≈ës√©gek");
         
-        MenuItem add = new MenuItem("KÈp megnyit·sa");
+        MenuItem add = new MenuItem("K√©p megnyit√°sa");
             add.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent t) {
                 	File file = fileChooser.showOpenDialog(primaryStage);
                     if (file != null) {
+                    	img = file;
                     	Image image = new Image(file.toURI().toString());
                     	imageView.setImage(image);
+                    	for (ImageListener il : listeners) {
+                            il.imageAdded(file);
+                    	}
                     	//vbox.setVisible(true);
                     }                   
                 }
             });        
+            
+        Button requestButton = new Button("Analiz√°l√°s!");
+        requestButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			public void handle(ActionEvent e) {
+				for (ImageListener il : listeners) {
+                    il.requestButtonPressed();
+            	}				
+			}
+        	
+        });
         
-        MenuItem exit = new MenuItem("KilÈpÈs");
+        MenuItem exit = new MenuItem("Kil√©p√©s");
         exit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 System.exit(0);
@@ -73,6 +103,7 @@ public class UI extends Application {
         Scene scene = new Scene(new VBox(), 800, 600);
         ((VBox)scene.getRoot()).getChildren().addAll(menuBar);
         ((VBox)scene.getRoot()).getChildren().addAll(imageView, description);
+        ((VBox)scene.getRoot()).getChildren().addAll(requestButton);
         ((VBox)scene.getRoot()).setAlignment(Pos.TOP_CENTER);
       
         primaryStage.setScene(scene);
@@ -83,8 +114,19 @@ public class UI extends Application {
     	launch(args);
     }
     
+    public void setDetectedFace(DetectedFace face) {
+    	detectedFace = face;
+    	setLabel();
+    }
+    
+    
+    private void setLabel() {
+    	
+    }
+    
+    
     private void configureFileChooser(final FileChooser fileChooser) {
-    	fileChooser.setTitle("V·lasszon egy kÈpet...");
+    	fileChooser.setTitle("V√°lasszon egy k√©pet...");
     	fileChooser.setInitialDirectory(
     			new File(System.getProperty("user.home"))
     			);
@@ -96,15 +138,4 @@ public class UI extends Application {
     	
     }
     
-    
-    private void openFile(File file) {
-        try {
-            desktop.open(file);
-        } catch (IOException ex) {
-            Logger.getLogger(
-                UI.class.getName()).log(
-                    Level.SEVERE, null, ex
-                );
-        }
-    }
 }
