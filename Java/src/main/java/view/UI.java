@@ -29,7 +29,7 @@ import javafx.scene.text.*;
 public class UI extends Application implements RequestListener {
 
 	ImageView imageView;
-	Label description;
+	static Label description;
 
 	static RequestHandler rh2;
 	DetectedFace detectedFace;
@@ -158,9 +158,9 @@ public class UI extends Application implements RequestListener {
 		message += "Bajusz: " + this.detectedFace.faceAttributes().facialHair().moustache() + "\n";
 		message += "Oldalszakáll: " + this.detectedFace.faceAttributes().facialHair().sideburns() + "\n";
 		message += "Kopasz: " + this.detectedFace.faceAttributes().hair().bald() + "\n";
-		message += this.detectedFace.toString();
+		//message += this.detectedFace.toString();
 		System.out.println(message);
-		setLabel(message);
+		description.setText(message);
 	}
 
 }
