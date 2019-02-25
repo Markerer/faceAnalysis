@@ -16,43 +16,43 @@ public class CustomAccessories {
 
 	public String toString() {
 		if (accessories.size() > 0) {
-			String ret = "Fejviselet: ";
+			String ret = "";
 			for (Accessory a : this.accessories) {
 				if (a.type().name().equals("headWear")) {
+					ret += "Fejviselet: ";
 					if (a.confidence() > 0.75) {
-						ret += "Van";
+						 ret += "Van\n";
 					} else {
-						ret += "Nincs";
+						ret += "Nincs\n";
 					}
 				}
 			}
-			ret += "\n";
-			ret += "Szemüveg: ";
+			/*
 			for (Accessory a : this.accessories) {
 				if (a.type().name().equals("glasses")) {
+					ret += "Szemüveg: ";
 					if (a.confidence() > 0.75) {
-						ret += "Van";
+						ret += "Van\n";
 					} else {
-						ret += "Nincs";
+						ret += "Nincs\n";
 					}
 				}
 			}
-			ret += "\n";
-			ret += "Maszk: ";
+			*/
 			for (Accessory a : this.accessories) {
 				if (a.type().name().equals("mask")) {
+					ret += "Maszk: ";
 					if (a.confidence() > 0.75) {
-						ret += "Van";
+						ret += "Van\n";
 					} else {
-						ret += "Nincs";
+						ret += "Nincs\n";
 					}
 				}
 			}
-			ret += "\n";
-
 			return ret;
+		} else {
+			return "";
 		}
-		return "";
 	}
 
 }

@@ -96,7 +96,6 @@ public class UI extends Application implements RequestListener {
 			public void handle(ActionEvent e) {
 				System.out.println("gomb lenyomva");
 				System.out.println("listener id2: " + listeners);
-				description.setText("kurv");
 				for (UIListener il : listeners) {
 					System.out.println("gomb lenyomva átadva");
 					il.requestButtonPressed();
@@ -131,20 +130,15 @@ public class UI extends Application implements RequestListener {
 		primaryStage.show();
 	}
 
-	private void setLabel(String message) {
-		description.setText(message);
-	}
-
 	private void configureFileChooser(final FileChooser fileChooser) {
 		fileChooser.setTitle("Válasszon egy képet...");
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Images", "*.*"),
-				new FileChooser.ExtensionFilter("JPG", "*.jpg"), new FileChooser.ExtensionFilter("PNG", "*.png"));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JPG", "*.jpg"), new FileChooser.ExtensionFilter("PNG", "*.png"));
 
 	}
 
 	public void requestFailed() {
-		setLabel("Nem sikerült a kérés!");
+		description.setText("Nem sikerült a kérés!");
 
 	}
 
