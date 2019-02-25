@@ -2,7 +2,9 @@ package interfaces;
 
 import java.io.File;
 
-public interface ImageListener {
+public interface UIListener {
+	
 	void imageAdded(File image);
-    void requestButtonPressed();
+    
+	void requestButtonPressed();
 }
