@@ -16,6 +16,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -39,22 +41,20 @@ public class RequestHandler implements UIListener {
 	private static final String faceAttributes = "age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
 
 	private UI userInterface;
-	
-	private List<RequestListener> listeners;
-	
 
-	private byte[] img;
+	private List<RequestListener> listeners;
+
+	private File image;
 
 	public RequestHandler() {
 		userInterface = new UI();
 		listeners = new ArrayList<RequestListener>();
 	}
-	
-	
+
 	public void start() {
 		userInterface.go(this);
 	}
-	
+
 	public void addListener(RequestListener toAdd) {
 		System.out.println("requestlistener added");
 		listeners.add(toAdd);
@@ -82,10 +82,10 @@ public class RequestHandler implements UIListener {
 
 			// Request body.
 			// StringEntity reqEntity = new StringEntity(imageWithFaces);
-			if(img != null) {
+			if (image != null) {
 				System.out.println("kep");
-				StringEntity stringEntity = new StringEntity(encodeToBase64Binary());
-				request.setEntity(stringEntity);
+				FileEntity fileEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);
+				request.setEntity(fileEntity);
 			}
 
 			// Execute the REST API call and get the response entity.
@@ -105,7 +105,7 @@ public class RequestHandler implements UIListener {
 
 					// így egy rendes objektumba rakhatjuk...
 					detectedFaces = mapper.readValue(jsonString, DetectedFace[].class);
-					for(RequestListener rh : listeners) {
+					for (RequestListener rh : listeners) {
 						rh.requestSuccess(detectedFaces[0]);
 					}
 					System.out.println(jsonArray.toString(2));
@@ -114,13 +114,13 @@ public class RequestHandler implements UIListener {
 				else if (jsonString.charAt(0) == '{') {
 					JSONObject jsonObject = new JSONObject(jsonString);
 					detectedFaces[1] = mapper.readValue(jsonString, DetectedFace.class);
-					for(RequestListener rh : listeners) {
+					for (RequestListener rh : listeners) {
 						rh.requestSuccess(detectedFaces[1]);
 					}
 					System.out.println(jsonObject.toString(2));
 				} else {
 					System.out.println(jsonString);
-					for(RequestListener rh : listeners) {
+					for (RequestListener rh : listeners) {
 						rh.requestFailed();
 					}
 				}
@@ -135,24 +135,8 @@ public class RequestHandler implements UIListener {
 	}
 
 	public void imageAdded(File image) {
-		try {
-			img = Files.readAllBytes(image.toPath());
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-	}
-
-	private String encodeToBase64Binary() {
-		String encodedfile = null;
-		try {
-			encodedfile = new String(Base64.encodeBase64(img), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-
-		return encodedfile;
+		this.image = image;
 	}
 
 	public void requestButtonPressed() {

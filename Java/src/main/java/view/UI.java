@@ -43,6 +43,7 @@ public class UI extends Application implements RequestListener {
 	
 	public void go(RequestHandler rh) {
 		rh2 = rh;
+		rh.addListener(this);
 		launch();
 		
 	}
@@ -94,6 +95,7 @@ public class UI extends Application implements RequestListener {
 			public void handle(ActionEvent e) {
 				System.out.println("gomb lenyomva");
 				System.out.println("listener id2: " + listeners);
+				description.setText("kurv");
 				for (UIListener il : listeners) {
 					System.out.println("gomb lenyomva átadva");
 					il.requestButtonPressed();
@@ -157,6 +159,7 @@ public class UI extends Application implements RequestListener {
 		message += "Oldalszakáll: " + this.detectedFace.faceAttributes().facialHair().sideburns() + "\n";
 		message += "Kopasz: " + this.detectedFace.faceAttributes().hair().bald() + "\n";
 		message += this.detectedFace.toString();
+		System.out.println(message);
 		setLabel(message);
 	}
 
