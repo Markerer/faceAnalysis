@@ -48,12 +48,11 @@ public class RequestHandler implements UIListener {
 	public RequestHandler() {
 		userInterface = new UI();
 		listeners = new ArrayList<RequestListener>();
-		userInterface.addListener(this);
 	}
 	
 	
 	public void start() {
-		userInterface.go();
+		userInterface.go(this);
 	}
 	
 	public void addListener(RequestListener toAdd) {

@@ -2,6 +2,7 @@ package view;
 
 import javafx.geometry.*;
 import javafx.stage.Screen;
+import logic.RequestHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class UI extends Application implements RequestListener {
 	ImageView imageView;
 	Label description;
 
+	static RequestHandler rh2;
 	DetectedFace detectedFace;
 	File img;
 
@@ -39,19 +41,25 @@ public class UI extends Application implements RequestListener {
 		listeners = new ArrayList<UIListener>();
 	}
 	
-	public void go() {
+	public void go(RequestHandler rh) {
+		rh2 = rh;
 		launch();
+		
 	}
 
 
 	public void addListener(UIListener toAdd) {
+		System.out.println("listener id1: " + listeners);
 		System.out.println("listener added");
 		listeners.add(toAdd);
+		System.out.println("listener id1: " + listeners);
 	}
 
 	@Override
 	public void start(final Stage primaryStage) {
 
+		listeners.add(rh2);
+		System.out.println(listeners);
 		imageView = new ImageView();
 		description = new Label();
 		primaryStage.setTitle("Face Analysis");
@@ -85,7 +93,7 @@ public class UI extends Application implements RequestListener {
 
 			public void handle(ActionEvent e) {
 				System.out.println("gomb lenyomva");
-				System.out.println(listeners.size());
+				System.out.println("listener id2: " + listeners);
 				for (UIListener il : listeners) {
 					System.out.println("gomb lenyomva átadva");
 					il.requestButtonPressed();
