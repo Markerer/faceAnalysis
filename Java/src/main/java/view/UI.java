@@ -3,6 +3,7 @@ package view;
 import javafx.geometry.*;
 import javafx.stage.Screen;
 import logic.RequestHandler;
+import wrappers.CustomDetectedFace;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import javafx.scene.text.*;
 public class UI extends Application implements RequestListener {
 
 	ImageView imageView;
-	static Label description;
+	static Text description;
 
 	static RequestHandler rh2;
 	DetectedFace detectedFace;
@@ -62,7 +63,7 @@ public class UI extends Application implements RequestListener {
 		listeners.add(rh2);
 		System.out.println(listeners);
 		imageView = new ImageView();
-		description = new Label();
+		description = new Text();
 		primaryStage.setTitle("Face Analysis");
 
 		final FileChooser fileChooser = new FileChooser();
@@ -89,7 +90,7 @@ public class UI extends Application implements RequestListener {
 			}
 		});
 
-		Button requestButton = new Button("Analizálás!");
+		Button requestButton = new Button("Kiértékelés!");
 		requestButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent e) {
@@ -115,12 +116,12 @@ public class UI extends Application implements RequestListener {
 
 		menuBar.getMenus().addAll(menuFile, menuActions);
 
-		imageView.setFitHeight(400);
+		Scene scene = new Scene(new VBox(), 1600, 900);
+		
+		imageView.setFitHeight(300);
 		imageView.setPreserveRatio(true);
-		description.setWrapText(true);
-		description.setTextAlignment(TextAlignment.JUSTIFY);
-
-		Scene scene = new Scene(new VBox(), 800, 600);
+		description.setTextAlignment(TextAlignment.CENTER);
+		
 		((VBox) scene.getRoot()).getChildren().addAll(menuBar);
 		((VBox) scene.getRoot()).getChildren().addAll(imageView, description);
 		((VBox) scene.getRoot()).getChildren().addAll(requestButton);
@@ -149,16 +150,8 @@ public class UI extends Application implements RequestListener {
 
 	public void requestSuccess(DetectedFace detectedFace) {
 		this.detectedFace = detectedFace;
-		String message = "";
-		message += "Életkor: " + this.detectedFace.faceAttributes().age() + "\n";
-		message += "Mosoly: " + this.detectedFace.faceAttributes().smile() + "\n";
-		message += "Nem: " + this.detectedFace.faceAttributes().gender().toString() + "\n";
-		message += "Szemüveg: " + this.detectedFace.faceAttributes().glasses().toString() + "\n";
-		message += "Szakáll: " + this.detectedFace.faceAttributes().facialHair().beard() + "\n";
-		message += "Bajusz: " + this.detectedFace.faceAttributes().facialHair().moustache() + "\n";
-		message += "Oldalszakáll: " + this.detectedFace.faceAttributes().facialHair().sideburns() + "\n";
-		message += "Kopasz: " + this.detectedFace.faceAttributes().hair().bald() + "\n";
-		//message += this.detectedFace.toString();
+		CustomDetectedFace customDetectedFace = new CustomDetectedFace(this.detectedFace);
+		String message = customDetectedFace.toString();
 		System.out.println(message);
 		description.setText(message);
 	}
