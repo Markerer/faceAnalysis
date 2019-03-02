@@ -1,5 +1,6 @@
 package view;
 
+import logic.Controller;
 import logic.RequestHandler;
 import java.io.IOException;
 
@@ -15,14 +16,18 @@ import javafx.fxml.*;
 
 public class UI extends Application {
 
+	public static Controller controller;
+	
 	public UI() {}
 	
-	public void go(RequestHandler rh) {
+	public void go() {
 		launch();
 	}
 
 	@Override
 	public void start(final Stage primaryStage) throws IOException {
+		
+		controller = new Controller(new RequestHandler());
 		
 		primaryStage.setTitle("Face Analysis");
 		

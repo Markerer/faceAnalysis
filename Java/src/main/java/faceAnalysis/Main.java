@@ -1,15 +1,14 @@
 package faceAnalysis;
 
-import logic.RequestHandler;
+import view.UI;
 
 public class Main {
 
 
 	public static void main(String[] args) {
 		
-		RequestHandler rh = new RequestHandler();
-		rh.start();
-		
+		UI ui = new UI();
+		ui.go();
 	}
 
 }

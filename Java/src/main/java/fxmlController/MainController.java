@@ -6,16 +6,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import view.UI;
 import wrappers.CustomDetectedFace;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 
-import interfaces.UIListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 
@@ -53,21 +52,15 @@ public class MainController implements Initializable{
 			this.imageFile = file;
 			Image image = new Image(file.toURI().toString());
 			this.image.setImage(image);
-			// interfészes cuccos, ehelyett Controlleren keresztül hívás
-			/*for (UIListener il : listeners) {
-				System.out.println("kép hozzáadva");
-				il.imageAdded(file);
-			}*/
 		}
 	}
 	
 	@FXML
 	private void onAnalyzeButtonPressed(final ActionEvent event) {
 		// interfészes cuccos, ehelyett Controlleren keresztül hívás
-		/*for (UIListener il : listeners) {
-			System.out.println("gomb lenyomva �tadva");
-			il.requestButtonPressed();
-		}*/
+		DetectedFace df = UI.controller.AnalyseLocalPicture(imageFile);
+		if (df!=null)
+			setDescription(df);
 	}
 	
 	

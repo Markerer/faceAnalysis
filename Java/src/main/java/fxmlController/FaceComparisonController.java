@@ -2,10 +2,8 @@ package fxmlController;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-import interfaces.UIListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -87,11 +85,6 @@ public class FaceComparisonController implements Initializable {
 			this.imageFile = file;
 			Image image = new Image(file.toURI().toString());
 			imageView.setImage(image);
-			// interfészes cuccos, ehelyett Controlleren keresztül hívás
-			/*for (UIListener il : listeners) {
-				System.out.println("Kép hozzáadva");
-				il.imageAdded(file);
-			}*/
 		}
 	}
 	

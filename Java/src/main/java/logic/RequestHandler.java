@@ -2,7 +2,6 @@ package logic;
 
 import java.io.File;
 import java.net.URI;
-import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,8 +18,7 @@ import org.json.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 
-import interfaces.RequestListener;
-import view.UI;
+import exception.RequestFailedException;
 
 public class RequestHandler {
 	private static final String subscriptionKey = "fc16ba16e4b4499a9cfbb4802a497e9e";
@@ -33,23 +31,15 @@ public class RequestHandler {
 
 	private static final String faceAttributes = "age,gender,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories";
 
-	private UI userInterface;
-	
-	// Nem fog kelleni
-	private List<RequestListener> listeners;
-
 	private File image;
 
 	public RequestHandler() {
-		userInterface = new UI();
-	}
-
-	public void start() {
-		userInterface.go(this);
+		
 	}
 
 	// Ez majd arra az eshetőségre, ha URL-ből is akarunk képet beolvasni...
-	private void buildAndSendHttpRequestFromURL() {
+	@SuppressWarnings("unused")
+	private DetectedFace buildAndSendHttpRequestFromURL() {
 		HttpClient httpclient = HttpClientBuilder.create().build();
 		System.out.println("fut");
 
@@ -79,7 +69,7 @@ public class RequestHandler {
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-				DetectedFace[] detectedFaces = new DetectedFace[2];
+				DetectedFace detectedFace = new DetectedFace();
 				ObjectMapper mapper = new ObjectMapper();
 
 				// Format and display the JSON response.
@@ -93,38 +83,35 @@ public class RequestHandler {
 		            System.out.println(jsonArray.toString(2));
 
 					// Így egy rendes objektumba rakhatjuk...
-					detectedFaces = mapper.readValue(jsonString, DetectedFace[].class);
+					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
 					// TODO Controller osztályon keresztül átadni
-					for (RequestListener rh : listeners) {
-						rh.requestSuccess(detectedFaces[0]);
-					}
+					return detectedFace;
 				}
 				// amennyiben ezzel kezdõdik, akkor az csak egy objektum...
 				else if (jsonString.charAt(0) == '{') {
-					detectedFaces[1] = mapper.readValue(jsonString, DetectedFace.class);
+					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
 					
 					JSONArray jsonArray = new JSONArray(jsonString);
 		            System.out.println(jsonArray.toString(2));
 		         // TODO Controller osztályon keresztül átadni
-					for (RequestListener rh : listeners) {
-						rh.requestSuccess(detectedFaces[1]);
-					}
+					return detectedFace;
+					
 				} else {
 					System.out.println(jsonString);
 					// TODO Controller osztályon keresztül átadni
-					for (RequestListener rh : listeners) {
-						rh.requestFailed();
-					}
+					
 				}
 			}
+			throw new RequestFailedException();
 		} catch (Exception e) {
 			// Display error message.
 			System.out.println(e.getMessage());
+			return null;
 		}
 	}
 
 	// Ez arra az esetre, ha beolvasott képes kérést küldünk.
-	private void buildAndSendHttpRequestFromLocalContent() {
+	private DetectedFace buildAndSendHttpRequestFromLocalContent() {
 		HttpClient httpclient = HttpClientBuilder.create().build();
 		System.out.println("fut");
 
@@ -156,23 +143,23 @@ public class RequestHandler {
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-				DetectedFace[] detectedFaces = new DetectedFace[2];
+				DetectedFace detectedFace = new DetectedFace();
 				ObjectMapper mapper = new ObjectMapper();
 
 
 				String jsonString = EntityUtils.toString(entity).trim();
 				// amennyiben ezzel kezdõdik, akkor az tömb...
+				
+				//TODO: megcsinálni, hogy több arcot felismerjen
 				if (jsonString.charAt(0) == '[') {
 					
 					JSONArray jsonArray = new JSONArray(jsonString);
 		            System.out.println(jsonArray.toString(2));
 
 					// így egy rendes objektumba rakhatjuk...
-					detectedFaces = mapper.readValue(jsonString, DetectedFace[].class);
+					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
 					// TODO Controller osztályon keresztül átadni
-					for (RequestListener rh : listeners) {
-						rh.requestSuccess(detectedFaces[0]);
-					}
+					return detectedFace;
 				}
 				// amennyiben ezzel kezdõdik, akkor az csak egy objektum...
 				else if (jsonString.charAt(0) == '{') {
@@ -181,22 +168,22 @@ public class RequestHandler {
 		            System.out.println(jsonArray.toString(2));
 					
 					
-					detectedFaces[1] = mapper.readValue(jsonString, DetectedFace.class);
+					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
 					// TODO Controller osztályon keresztül átadni
-					for (RequestListener rh : listeners) {
-						rh.requestSuccess(detectedFaces[1]);
-					}
+					return detectedFace;
+					
 				} else {
 					System.out.println(jsonString);
 					// TODO Controller osztályon keresztül átadni
-					for (RequestListener rh : listeners) {
-						rh.requestFailed();
-					}
+					
 				}
 			}
-		} catch (Exception e) {
+			throw new RequestFailedException();
+		}
+		catch (Exception e) {
 			// Display error message.
 			System.out.println(e.getMessage());
+			return null;
 		}
 	}
 
@@ -207,10 +194,11 @@ public class RequestHandler {
 	}
 
 	// Controller osztály hívná meg...
-	public void requestButtonPressed() {
+	public DetectedFace requestButtonPressed() {
 		if (image != null) {
-			buildAndSendHttpRequestFromLocalContent();
+			return buildAndSendHttpRequestFromLocalContent();
 		}
+		return null; // csúnya, de most fáradt vagyok xd
 	}
 
 }

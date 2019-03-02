@@ -15,7 +15,7 @@ public class CustomDetectedFace {
 	
 	public CustomDetectedFace(DetectedFace detectedFace) {
 		this.detectedFace = detectedFace;
-		this.customAccessories = new CustomAccessories(this.detectedFace.faceAttributes().accessories());
+		//this.customAccessories = new CustomAccessories(this.detectedFace.faceAttributes().accessories());
 		this.customEmotion = new CustomEmotion(this.detectedFace.faceAttributes().emotion());
 		this.customFacialHair = new CustomFacialHair(this.detectedFace.faceAttributes().facialHair());
 		this.customHair = new CustomHair(this.detectedFace.faceAttributes().hair());
