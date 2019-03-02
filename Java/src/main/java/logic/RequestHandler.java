@@ -1,37 +1,28 @@
 package logic;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 
 import interfaces.RequestListener;
-import interfaces.UIListener;
 import view.UI;
 
-public class RequestHandler implements UIListener {
+public class RequestHandler {
 	private static final String subscriptionKey = "fc16ba16e4b4499a9cfbb4802a497e9e";
 
 	private static final String uriBaseforLocalContent = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect?overload=stream&";
@@ -43,25 +34,21 @@ public class RequestHandler implements UIListener {
 	private static final String faceAttributes = "age,gender,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories";
 
 	private UI userInterface;
-
+	
+	// Nem fog kelleni
 	private List<RequestListener> listeners;
 
 	private File image;
 
 	public RequestHandler() {
 		userInterface = new UI();
-		listeners = new ArrayList<RequestListener>();
 	}
 
 	public void start() {
 		userInterface.go(this);
 	}
 
-	public void addListener(RequestListener toAdd) {
-		System.out.println("requestlistener added");
-		listeners.add(toAdd);
-	}
-
+	// Ez majd arra az eshetőségre, ha URL-ből is akarunk képet beolvasni...
 	private void buildAndSendHttpRequestFromURL() {
 		HttpClient httpclient = HttpClientBuilder.create().build();
 		System.out.println("fut");
@@ -105,8 +92,9 @@ public class RequestHandler implements UIListener {
 					JSONArray jsonArray = new JSONArray(jsonString);
 		            System.out.println(jsonArray.toString(2));
 
-					// így egy rendes objektumba rakhatjuk...
+					// Így egy rendes objektumba rakhatjuk...
 					detectedFaces = mapper.readValue(jsonString, DetectedFace[].class);
+					// TODO Controller osztályon keresztül átadni
 					for (RequestListener rh : listeners) {
 						rh.requestSuccess(detectedFaces[0]);
 					}
@@ -117,12 +105,13 @@ public class RequestHandler implements UIListener {
 					
 					JSONArray jsonArray = new JSONArray(jsonString);
 		            System.out.println(jsonArray.toString(2));
-		            
+		         // TODO Controller osztályon keresztül átadni
 					for (RequestListener rh : listeners) {
 						rh.requestSuccess(detectedFaces[1]);
 					}
 				} else {
 					System.out.println(jsonString);
+					// TODO Controller osztályon keresztül átadni
 					for (RequestListener rh : listeners) {
 						rh.requestFailed();
 					}
@@ -134,6 +123,7 @@ public class RequestHandler implements UIListener {
 		}
 	}
 
+	// Ez arra az esetre, ha beolvasott képes kérést küldünk.
 	private void buildAndSendHttpRequestFromLocalContent() {
 		HttpClient httpclient = HttpClientBuilder.create().build();
 		System.out.println("fut");
@@ -179,6 +169,7 @@ public class RequestHandler implements UIListener {
 
 					// így egy rendes objektumba rakhatjuk...
 					detectedFaces = mapper.readValue(jsonString, DetectedFace[].class);
+					// TODO Controller osztályon keresztül átadni
 					for (RequestListener rh : listeners) {
 						rh.requestSuccess(detectedFaces[0]);
 					}
@@ -191,11 +182,13 @@ public class RequestHandler implements UIListener {
 					
 					
 					detectedFaces[1] = mapper.readValue(jsonString, DetectedFace.class);
+					// TODO Controller osztályon keresztül átadni
 					for (RequestListener rh : listeners) {
 						rh.requestSuccess(detectedFaces[1]);
 					}
 				} else {
 					System.out.println(jsonString);
+					// TODO Controller osztályon keresztül átadni
 					for (RequestListener rh : listeners) {
 						rh.requestFailed();
 					}
@@ -207,11 +200,13 @@ public class RequestHandler implements UIListener {
 		}
 	}
 
+	
+	// Controller osztály hívná ezt meg...
 	public void imageAdded(File image) {
-
 		this.image = image;
 	}
 
+	// Controller osztály hívná meg...
 	public void requestButtonPressed() {
 		if (image != null) {
 			buildAndSendHttpRequestFromLocalContent();

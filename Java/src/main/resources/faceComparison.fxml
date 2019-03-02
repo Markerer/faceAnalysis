@@ -29,13 +29,16 @@ fx:controller="fxmlController.FaceComparisonController">
                      </children>
                   </HBox>
                </children>
+                <HBox.margin>
+                  <Insets right="25.0" />
+               </HBox.margin>
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <ImageView fx:id="rightImage" fitHeight="300.0" fitWidth="450.0" pickOnBounds="true" preserveRatio="true" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Button fx:id="rightImageButton" alignment="CENTER" mnemonicParsing="false" onAction="#onRightImageButtonPressed" text="Kép kiv�lasztása" textAlignment="CENTER">
+                        <Button fx:id="rightImageButton" alignment="CENTER" mnemonicParsing="false" onAction="#onRightImageButtonPressed" text="Kép kiválasztása" textAlignment="CENTER">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
@@ -48,6 +51,9 @@ fx:controller="fxmlController.FaceComparisonController">
                      </children>
                   </HBox>
                </children>
+               <HBox.margin>
+                  <Insets left="25.0" />
+               </HBox.margin>
             </VBox>
          </children>
          <opaqueInsets>
