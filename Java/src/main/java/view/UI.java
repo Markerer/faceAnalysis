@@ -1,13 +1,11 @@
 package view;
 
 import javafx.geometry.*;
-import javafx.stage.Screen;
 import logic.RequestHandler;
 import wrappers.CustomDetectedFace;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +23,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import javafx.scene.text.*;
+import javafx.fxml.*;
 
-@SuppressWarnings("restriction")
+
 public class UI extends Application implements RequestListener {
 
 	ImageView imageView;
@@ -58,13 +57,25 @@ public class UI extends Application implements RequestListener {
 	}
 
 	@Override
-	public void start(final Stage primaryStage) {
+	public void start(final Stage primaryStage) throws IOException {
 
 		listeners.add(rh2);
 		System.out.println(listeners);
 		imageView = new ImageView();
 		description = new Text();
 		primaryStage.setTitle("Face Analysis");
+		
+		Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
+		
+		Scene scene = new Scene(root, 1400, 800);
+		
+		primaryStage.setScene(scene);
+		primaryStage.show();
+		
+		
+		
+		
+		/*
 
 		final FileChooser fileChooser = new FileChooser();
 		configureFileChooser(fileChooser);
@@ -128,6 +139,7 @@ public class UI extends Application implements RequestListener {
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		*/
 	}
 
 	private void configureFileChooser(final FileChooser fileChooser) {

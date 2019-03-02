@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="BASELINE_CENTER" prefHeight="900.0" prefWidth="1400.0"
+ xmlns="http://javafx.com/javafx/8.0.171"
+ xmlns:fx="http://javafx.com/fxml/1"
+ fx:controller="fxmlController.MainController">
+  <children>
+      <fx:include source="menuBar.fxml" />
+      <ImageView fx:id="image" fitHeight="300.0" fitWidth="450.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="description" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" />
+      <Button fx:id="analysisButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAnalyzeButtonPressed" text="Kiértékelés" textAlignment="CENTER" />
+  </children>
+</VBox>
