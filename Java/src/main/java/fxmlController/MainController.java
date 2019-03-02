@@ -2,8 +2,10 @@ package fxmlController;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import view.UI;
@@ -30,7 +32,7 @@ public class MainController implements Initializable{
 	private MenuController menuController;
 	
 	@FXML
-	private Label description;
+	private Text description;
 	
 	@FXML
 	private ImageView image;
@@ -54,6 +56,7 @@ public class MainController implements Initializable{
 			this.imageFile = file;
 			Image image = new Image(file.toURI().toString());
 			this.image.setImage(image);
+			
 		}
 	}
 	

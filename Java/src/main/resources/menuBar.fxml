@@ -5,7 +5,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 
-<MenuBar fx:controller="fxmlController.MenuController" fx:id="menuBar" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<MenuBar fx:controller="fxmlController.MenuController" fx:id="menuBar" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1">
   <menus>
     <Menu mnemonicParsing="false" text="Fájl">
       <items>
