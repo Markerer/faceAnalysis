@@ -6,6 +6,8 @@ import java.util.List;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.Accessory;
 
 public class CustomAccessories {
+	
+	//TODO valami bug van, nullpointer... listával valami
 
 	List<Accessory> accessories;
 
@@ -15,6 +17,7 @@ public class CustomAccessories {
 	}
 
 	public String toString() {
+		System.out.print(accessories.size());
 		if (accessories.size() > 0) {
 			String ret = "";
 			for (Accessory a : this.accessories) {

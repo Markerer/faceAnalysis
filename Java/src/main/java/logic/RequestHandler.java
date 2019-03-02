@@ -2,6 +2,8 @@ package logic;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -15,6 +17,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 
@@ -111,7 +114,7 @@ public class RequestHandler {
 	}
 
 	// Ez arra az esetre, ha beolvasott képes kérést küldünk.
-	private DetectedFace buildAndSendHttpRequestFromLocalContent() {
+	private List<DetectedFace> buildAndSendHttpRequestFromLocalContent() {
 		HttpClient httpclient = HttpClientBuilder.create().build();
 		System.out.println("fut");
 
@@ -143,7 +146,7 @@ public class RequestHandler {
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-				DetectedFace detectedFace = new DetectedFace();
+				List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
 				ObjectMapper mapper = new ObjectMapper();
 
 
@@ -157,9 +160,9 @@ public class RequestHandler {
 		            System.out.println(jsonArray.toString(2));
 
 					// így egy rendes objektumba rakhatjuk...
-					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
+					detectedFaces = mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class));
 					// TODO Controller osztályon keresztül átadni
-					return detectedFace;
+					return detectedFaces;
 				}
 				// amennyiben ezzel kezdõdik, akkor az csak egy objektum...
 				else if (jsonString.charAt(0) == '{') {
@@ -168,9 +171,9 @@ public class RequestHandler {
 		            System.out.println(jsonArray.toString(2));
 					
 					
-					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
+					detectedFaces.add(mapper.readValue(jsonString, DetectedFace.class));
 					// TODO Controller osztályon keresztül átadni
-					return detectedFace;
+					return detectedFaces;
 					
 				} else {
 					System.out.println(jsonString);
@@ -194,7 +197,7 @@ public class RequestHandler {
 	}
 
 	// Controller osztály hívná meg...
-	public DetectedFace requestButtonPressed() {
+	public List<DetectedFace> requestButtonPressed() {
 		if (image != null) {
 			return buildAndSendHttpRequestFromLocalContent();
 		}

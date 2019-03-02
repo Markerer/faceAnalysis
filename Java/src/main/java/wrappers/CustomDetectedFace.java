@@ -90,7 +90,7 @@ public class CustomDetectedFace {
 		ret += customHair.toString();
 		ret += customMakeup.toString();
 		ret += customOcclusion.toString();
-		ret += customAccessories.toString();		
+		//ret += customAccessories.toString();		
 		
 		return ret;
 	}

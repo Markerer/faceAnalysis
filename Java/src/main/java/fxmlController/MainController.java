@@ -11,6 +11,8 @@ import wrappers.CustomDetectedFace;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
@@ -58,19 +60,24 @@ public class MainController implements Initializable{
 	@FXML
 	private void onAnalyzeButtonPressed(final ActionEvent event) {
 		// interfészes cuccos, ehelyett Controlleren keresztül hívás
-		DetectedFace df = UI.controller.AnalyseLocalPicture(imageFile);
-		if (df!=null)
-			setDescription(df);
+		// Listát kapunk vissza, jelenleg csak az 1. elemmel foglalkozunk
+		// TODO bővítési lehetőség (több arc tulajdonságának kiírása)
+		List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
+			detectedFaces = UI.controller.AnalyseLocalPicture(imageFile);
+		if(detectedFaces.size() > 0) {
+			
+			DetectedFace df = detectedFaces.get(0);
+			System.out.println(detectedFaces.size());
+			System.out.println(df.toString());
+			CustomDetectedFace customDetectedFace = new CustomDetectedFace(df);
+			setDescription(customDetectedFace.toString());
+		} else {
+			setDescription("Nem található felismerhető arc a képen.");
+		}
 	}
 	
-	
-	// Controller osztály meghívhatja majd a kérés visszatérésekor...
-	// Az eredmény feldolgozása lehet akár a Controllerben is (DetectedFace)
-	// azaz, akkor csak String-et kell átadni paraméterben 
-	// így nem kellene tárolni a detectedFace-t itt is...
-	public void setDescription(DetectedFace detectedFace) {
-		CustomDetectedFace customDetectedFace = new CustomDetectedFace(detectedFace);
-		String message = customDetectedFace.toString();
+
+	public void setDescription(String message) {
 		System.out.println(message);
 		description.setText(message);
 	}
@@ -78,11 +85,6 @@ public class MainController implements Initializable{
 	
 	public void setStage(final Stage stage) {
 		this.menuController.setStage(stage);
-	}
-
-	
-	public void init() {
-		// Controller osztály beállítás? 
 	}
 
 	// hivatalos inicializáló whatever, lehet nem is kellene...

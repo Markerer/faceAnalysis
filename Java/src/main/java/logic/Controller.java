@@ -1,6 +1,8 @@
 package logic;
 
 import java.io.File;
+import java.util.List;
+
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 import view.UI;
 
@@ -12,9 +14,9 @@ public class Controller {
 	public Controller(RequestHandler rh) {
 		this.rh = rh;
 	}
-	public DetectedFace AnalyseLocalPicture(File image) {
+	public List<DetectedFace> AnalyseLocalPicture(File image) {
 		rh.imageAdded(image);
-		DetectedFace detectedFace = rh.requestButtonPressed();		
+		List<DetectedFace> detectedFace = rh.requestButtonPressed();		
 		
 		return detectedFace;
 	}
