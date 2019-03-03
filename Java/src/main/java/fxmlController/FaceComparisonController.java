@@ -1,7 +1,6 @@
 package fxmlController;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -22,15 +21,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import view.UI;
 
 public class FaceComparisonController implements Initializable {
 
-	// Felesleges lesz a tárolása, elég lesz a betöltéskor átadni...
-	private File imageFile;
+	
+	private File leftImageFile;
+	private File rightImageFile;
 	
 	private boolean stopCamera = true;
 	private Webcam selWebCam = null;
@@ -48,7 +49,7 @@ public class FaceComparisonController implements Initializable {
 	private ImageView rightImage;
 	
 	@FXML
-	private Label comparisonDescription;
+	private Text comparisonDescription;
 	
 	@FXML
 	private Button webcamButton;
@@ -65,12 +66,12 @@ public class FaceComparisonController implements Initializable {
 	
 	@FXML
 	private void onLeftImageButtonPressed(final ActionEvent event) {
-		this.fileChoosing(this.leftImage);
+		this.leftImageFile = fileChoosing(this.leftImage);
 	}
 	
 	@FXML
 	private void onRightImageButtonPressed(final ActionEvent event) {
-		this.fileChoosing(this.rightImage);
+		this.rightImageFile = fileChoosing(this.rightImage);
 	}
 	
 	private class WebCamInfo {
@@ -109,11 +110,9 @@ public class FaceComparisonController implements Initializable {
 
 				if (selWebCam == null) {
 					selWebCam = Webcam.getDefault();
-					selWebCam.open();
 				} else {
 					closeCamera();
 					selWebCam = Webcam.getDefault();
-					selWebCam.open();
 				}
 				
 				return null;
@@ -181,8 +180,7 @@ public class FaceComparisonController implements Initializable {
 	@FXML
 	private void onWebcamButtonPressed(final ActionEvent event) throws IOException {
 		
-		File file;
-		
+	
 		if(stopCamera && selWebCam != null) {
 			this.webcamButton.setText("Kép készítése");
 			startWebCamStream();
@@ -196,22 +194,21 @@ public class FaceComparisonController implements Initializable {
 				closeCamera();
 				rightImageButton.setDisable(false);
 				
-				file = new File("captured.png");
-				Image img = new Image(file.toURI().toString());
+				rightImageFile = new File("captured.png");
+				Image img = new Image(rightImageFile.toURI().toString());
 				rightImage.imageProperty().unbind();
 				rightImage.setImage(img);
 			}
-		}
-		
-		// TODO kép átadása a Controller osztályon keresztül
-		
+		}		
 	}
 	
 	
 	// TODO Controlleren keresztül REST Api hívás...
 	@FXML
 	private void onComparisonButtonPressed(final ActionEvent event) {
-		
+		if(leftImageFile != null && rightImageFile != null) {
+			comparisonDescription.setText(UI.controller.CompareTwoPictures(leftImageFile, rightImageFile));
+		}
 	}
 	
 	
@@ -231,7 +228,7 @@ public class FaceComparisonController implements Initializable {
 		}
 	}
 
-	private void fileChoosing(final ImageView imageView) {
+	private File fileChoosing(final ImageView imageView) {
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Válasszon egy képet...");
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -240,14 +237,10 @@ public class FaceComparisonController implements Initializable {
 		
 		File file = fileChooser.showOpenDialog(MenuController.getStage());
 		if (file != null) {
-			this.imageFile = file;
 			Image image = new Image(file.toURI().toString());
 			imageView.setImage(image);
-			// interfészes cuccos, ehelyett Controlleren keresztül hívás
-			/*for (UIListener il : listeners) {
-				System.out.println("Kép hozzáadva");
-				il.imageAdded(file);
-			}*/
+			return file;
 		}
+		return null;
 	}	
 }

@@ -42,7 +42,7 @@ public class MenuController implements Initializable {
 	private void onBackToMainItemPressed(final ActionEvent event) throws IOException {
 		
 		Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
-		Scene scene = new Scene(root, 1400, 800);
+		Scene scene = new Scene(root, 1600, 900);
 		actualStage.setScene(scene);
 	}
 	
@@ -50,7 +50,7 @@ public class MenuController implements Initializable {
 	private void onFaceComparisonItemPressed(final ActionEvent event) throws IOException {
 			
 		Parent root = FXMLLoader.load(getClass().getResource("/faceComparison.fxml"));
-		Scene scene = new Scene(root, 1400, 800);
+		Scene scene = new Scene(root, 1600, 900);
 		actualStage.setScene(scene);
 	}	
 	

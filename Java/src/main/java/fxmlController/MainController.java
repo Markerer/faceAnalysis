@@ -70,8 +70,6 @@ public class MainController implements Initializable{
 		if(detectedFaces.size() > 0) {
 			
 			DetectedFace df = detectedFaces.get(0);
-			System.out.println(detectedFaces.size());
-			System.out.println(df.toString());
 			CustomDetectedFace customDetectedFace = new CustomDetectedFace(df);
 			setDescription(customDetectedFace.toString());
 		} else {
@@ -81,7 +79,6 @@ public class MainController implements Initializable{
 	
 
 	public void setDescription(String message) {
-		System.out.println(message);
 		description.setText(message);
 	}
 	

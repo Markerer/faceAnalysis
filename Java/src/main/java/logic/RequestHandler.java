@@ -16,38 +16,38 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
+import com.microsoft.azure.cognitiveservices.vision.faceapi.models.VerifyResult;
 
 import exception.RequestFailedException;
 
 public class RequestHandler {
 	private static final String subscriptionKey = "fc16ba16e4b4499a9cfbb4802a497e9e";
 
-	private static final String uriBaseforLocalContent = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect?overload=stream&";
+	private static final String uriBaseforLocalContentDetect = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect?overload=stream&";
 
-	private static final String uriBaseforURL = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect";
-
+	private static final String uriBaseforURLDetect = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect";
+	
+	private static final String uriBaseforVerify = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/verify";
+	
 	private static final String imageWithFaces = "{\"url\":\"https://upload.wikimedia.org/wikipedia/commons/c/c3/RH_Louise_Lillian_Gish.jpg\"}";
 
 	private static final String faceAttributes = "age,gender,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories";
-
-	private File image;
 
 	public RequestHandler() {
 		
 	}
 
-	// Ez majd arra az eshetőségre, ha URL-ből is akarunk képet beolvasni...
+	// Ez arra az eshetőségre, ha URL-ből is akarunk képet beolvasni...
 	@SuppressWarnings("unused")
-	private DetectedFace buildAndSendHttpRequestFromURL() {
+	public List<DetectedFace> buildAndSendHttpRequestFromURL() {
 		HttpClient httpclient = HttpClientBuilder.create().build();
-		System.out.println("fut");
 
 		try {
-			URIBuilder builder = new URIBuilder(uriBaseforURL);
+			URIBuilder builder = new URIBuilder(uriBaseforURLDetect);
 
 			// Request parameters. All of them are optional.
 			builder.setParameter("returnFaceId", "true");
@@ -64,15 +64,14 @@ public class RequestHandler {
 
 			// Request body.
 			StringEntity reqEntity = new StringEntity(imageWithFaces);
-			if (image != null) {
-				request.setEntity(reqEntity);
-			}
+			request.setEntity(reqEntity);
+			
 
 			// Execute the REST API call and get the response entity.
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-				DetectedFace detectedFace = new DetectedFace();
+				List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
 				ObjectMapper mapper = new ObjectMapper();
 
 				// Format and display the JSON response.
@@ -86,23 +85,20 @@ public class RequestHandler {
 		            System.out.println(jsonArray.toString(2));
 
 					// Így egy rendes objektumba rakhatjuk...
-					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
+		            detectedFaces = mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class));
 					// TODO Controller osztályon keresztül átadni
-					return detectedFace;
+					return detectedFaces;
 				}
 				// amennyiben ezzel kezdõdik, akkor az csak egy objektum...
 				else if (jsonString.charAt(0) == '{') {
-					detectedFace = mapper.readValue(jsonString, DetectedFace.class);
+					detectedFaces.add(mapper.readValue(jsonString, DetectedFace.class));
 					
 					JSONArray jsonArray = new JSONArray(jsonString);
 		            System.out.println(jsonArray.toString(2));
-		         // TODO Controller osztályon keresztül átadni
-					return detectedFace;
+					return detectedFaces;
 					
 				} else {
 					System.out.println(jsonString);
-					// TODO Controller osztályon keresztül átadni
-					
 				}
 			}
 			throw new RequestFailedException();
@@ -114,12 +110,11 @@ public class RequestHandler {
 	}
 
 	// Ez arra az esetre, ha beolvasott képes kérést küldünk.
-	private List<DetectedFace> buildAndSendHttpRequestFromLocalContent() {
+	public List<DetectedFace> buildAndSendHttpRequestFromLocalContent(File image) {
 		HttpClient httpclient = HttpClientBuilder.create().build();
-		System.out.println("fut");
 
 		try {
-			URIBuilder builder = new URIBuilder(uriBaseforLocalContent);
+			URIBuilder builder = new URIBuilder(uriBaseforLocalContentDetect);
 
 			// Request parameters. All of them are optional.
 			builder.setParameter("returnFaceId", "true");
@@ -137,7 +132,6 @@ public class RequestHandler {
 			// Request body.
 			// StringEntity reqEntity = new StringEntity(imageWithFaces);
 			if (image != null) {
-				System.out.println("kep");
 				FileEntity fileEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);
 				request.setEntity(fileEntity);
 			}
@@ -172,13 +166,10 @@ public class RequestHandler {
 					
 					
 					detectedFaces.add(mapper.readValue(jsonString, DetectedFace.class));
-					// TODO Controller osztályon keresztül átadni
 					return detectedFaces;
 					
 				} else {
 					System.out.println(jsonString);
-					// TODO Controller osztályon keresztül átadni
-					
 				}
 			}
 			throw new RequestFailedException();
@@ -189,19 +180,57 @@ public class RequestHandler {
 			return null;
 		}
 	}
-
 	
-	// Controller osztály hívná ezt meg...
-	public void imageAdded(File image) {
-		this.image = image;
-	}
+	public VerifyResult sendVerifyRequest(String faceId1, String faceId2) {
+		
+		HttpClient httpclient = HttpClientBuilder.create().build();
 
-	// Controller osztály hívná meg...
-	public List<DetectedFace> requestButtonPressed() {
-		if (image != null) {
-			return buildAndSendHttpRequestFromLocalContent();
+		try {
+			URIBuilder builder = new URIBuilder(uriBaseforVerify);
+
+			// Prepare the URI for the REST API call.
+			URI uri = builder.build();
+			HttpPost request = new HttpPost(uri);
+
+			// Request headers.
+			request.setHeader("Content-Type", "application/json");
+			request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+			
+			// Request body.
+			JSONObject json = new JSONObject();
+			json.put("faceId1", faceId1);
+			json.put("faceId2", faceId2);
+			StringEntity reqEntity = new StringEntity(json.toString());
+			request.setEntity(reqEntity);
+			
+
+			// Execute the REST API call and get the response entity.
+			HttpResponse response = httpclient.execute(request);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				ObjectMapper mapper = new ObjectMapper();
+
+				// Format and display the JSON response.
+				System.out.println("REST Response:\n");
+
+				String jsonString = EntityUtils.toString(entity).trim();
+				
+				if (jsonString.charAt(0) == '{') {
+					VerifyResult result = mapper.readValue(jsonString, VerifyResult.class);
+					
+					return result;
+					
+				} else {
+					System.out.println(jsonString);					
+				}
+			}
+			throw new RequestFailedException();
+		} catch (Exception e) {
+			// Display error message.
+			System.out.println(e.getMessage());
+			return null;
 		}
-		return null; // csúnya, de most fáradt vagyok xd
 	}
-
+	
+	
 }

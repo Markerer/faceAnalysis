@@ -39,7 +39,7 @@ public class UI extends Application {
 		
 		mainController.setStage(primaryStage);
 		
-		Scene scene = new Scene(root, 1400, 800);
+		Scene scene = new Scene(root, 1600, 900);
 		
 		primaryStage.setScene(scene);
 		primaryStage.show();
