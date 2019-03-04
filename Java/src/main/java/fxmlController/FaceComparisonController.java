@@ -10,6 +10,8 @@ import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
 
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamResolution;
+
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -110,9 +112,11 @@ public class FaceComparisonController implements Initializable {
 
 				if (selWebCam == null) {
 					selWebCam = Webcam.getDefault();
+					selWebCam.setViewSize(WebcamResolution.VGA.getSize());
 				} else {
 					closeCamera();
 					selWebCam = Webcam.getDefault();
+					selWebCam.setViewSize(WebcamResolution.VGA.getSize());
 				}
 				
 				return null;
@@ -132,7 +136,7 @@ public class FaceComparisonController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 
-				while (!stopCamera) {
+				while (!stopCamera && selWebCam.isOpen()) {
 					try {
 						if ((grabbedImage = selWebCam.getImage()) != null) {
 
@@ -187,7 +191,6 @@ public class FaceComparisonController implements Initializable {
 			rightImageButton.setDisable(true);
 		} else {
 			if(!stopCamera && selWebCam != null) {
-				stopCamera = true;
 				BufferedImage image = selWebCam.getImage();
 				ImageIO.write(image, "PNG", new File("captured.png"));
 				this.webcamButton.setText("Webkamera megnyitása");
@@ -198,6 +201,7 @@ public class FaceComparisonController implements Initializable {
 				Image img = new Image(rightImageFile.toURI().toString());
 				rightImage.imageProperty().unbind();
 				rightImage.setImage(img);
+				stopCamera = true;
 			}
 		}		
 	}
