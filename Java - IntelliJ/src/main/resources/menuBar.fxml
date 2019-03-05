@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+
+<MenuBar fx:controller="fxmlController.MenuController" fx:id="menuBar" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1">
+  <menus>
+    <Menu mnemonicParsing="false" text="Fájl">
+      <items>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#onExitItemPressed" text="Kilépés" />
+      </items>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Lehetőségek">
+      <items>
+      	<MenuItem mnemonicParsing="false" onAction="#onBackToMainItemPressed" text="Vissza a kezdőoldalra" />
+        <MenuItem mnemonicParsing="false" onAction="#onFaceComparisonItemPressed" text="Két kép összehasonlítása" />
+      </items>
+    </Menu>
+  </menus>
+</MenuBar>
