@@ -1,10 +1,12 @@
 package logic;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.concurrent.Task;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -25,212 +27,208 @@ import com.microsoft.azure.cognitiveservices.vision.faceapi.models.VerifyResult;
 import exception.RequestFailedException;
 
 public class RequestHandler {
-	private static final String subscriptionKey = "fc16ba16e4b4499a9cfbb4802a497e9e";
+    private static final String subscriptionKey = "fc16ba16e4b4499a9cfbb4802a497e9e";
 
-	private static final String uriBaseforLocalContentDetect = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect?overload=stream&";
+    private static final String uriBaseforLocalContentDetect = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect?overload=stream&";
 
-	private static final String uriBaseforURLDetect = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect";
-	
-	private static final String uriBaseforVerify = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/verify";
-	
-	private static final String imageWithFaces = "{\"url\":\"https://upload.wikimedia.org/wikipedia/commons/c/c3/RH_Louise_Lillian_Gish.jpg\"}";
+    private static final String uriBaseforURLDetect = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/detect";
 
-	private static final String faceAttributes = "age,gender,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories";
+    private static final String uriBaseforVerify = "https://northeurope.api.cognitive.microsoft.com/face/v1.0/verify";
 
-	public RequestHandler() {
-		
-	}
+    private static final String imageWithFaces = "{\"url\":\"https://upload.wikimedia.org/wikipedia/commons/c/c3/RH_Louise_Lillian_Gish.jpg\"}";
 
-	// Ez arra az eshetőségre, ha URL-ből is akarunk képet beolvasni...
-	@SuppressWarnings("unused")
-	public List<DetectedFace> buildAndSendHttpRequestFromURL() {
-		HttpClient httpclient = HttpClientBuilder.create().build();
+    private static final String faceAttributes = "age,gender,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories";
 
-		try {
-			URIBuilder builder = new URIBuilder(uriBaseforURLDetect);
+    public RequestHandler() {
 
-			// Request parameters. All of them are optional.
-			builder.setParameter("returnFaceId", "true");
-			builder.setParameter("returnFaceLandmarks", "false");
-			builder.setParameter("returnFaceAttributes", faceAttributes);
+    }
 
-			// Prepare the URI for the REST API call.
-			URI uri = builder.build();
-			HttpPost request = new HttpPost(uri);
+    // Ez arra az eshetőségre, ha URL-ből is akarunk képet beolvasni...
+    public List<DetectedFace> buildAndSendHttpRequestFromURL() {
 
-			// Request headers.
-			request.setHeader("Content-Type", "application/json");
-			request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-
-			// Request body.
-			StringEntity reqEntity = new StringEntity(imageWithFaces);
-			request.setEntity(reqEntity);
-			
-
-			// Execute the REST API call and get the response entity.
-			HttpResponse response = httpclient.execute(request);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
-				ObjectMapper mapper = new ObjectMapper();
-
-				// Format and display the JSON response.
-				System.out.println("REST Response:\n");
-
-				String jsonString = EntityUtils.toString(entity).trim();
-				// amennyiben ezzel kezdõdik, akkor az tömb...
-				if (jsonString.charAt(0) == '[') {
-					
-					JSONArray jsonArray = new JSONArray(jsonString);
-		            System.out.println(jsonArray.toString(2));
-
-					// Így egy rendes objektumba rakhatjuk...
-		            detectedFaces = mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class));
-					// TODO Controller osztályon keresztül átadni
-					return detectedFaces;
-				}
-				// amennyiben ezzel kezdõdik, akkor az csak egy objektum...
-				else if (jsonString.charAt(0) == '{') {
-					detectedFaces.add(mapper.readValue(jsonString, DetectedFace.class));
-					
-					JSONArray jsonArray = new JSONArray(jsonString);
-		            System.out.println(jsonArray.toString(2));
-					return detectedFaces;
-					
-				} else {
-					System.out.println(jsonString);
-				}
-			}
-			throw new RequestFailedException();
-		} catch (Exception e) {
-			// Display error message.
-			System.out.println(e.getMessage());
-			return null;
-		}
-	}
-
-	// Ez arra az esetre, ha beolvasott képes kérést küldünk.
-	public List<DetectedFace> buildAndSendHttpRequestFromLocalContent(File image) {
-		HttpClient httpclient = HttpClientBuilder.create().build();
-
-		try {
-			URIBuilder builder = new URIBuilder(uriBaseforLocalContentDetect);
-
-			// Request parameters. All of them are optional.
-			builder.setParameter("returnFaceId", "true");
-			builder.setParameter("returnFaceLandmarks", "false");
-			builder.setParameter("returnFaceAttributes", faceAttributes);
-
-			// Prepare the URI for the REST API call.
-			URI uri = builder.build();
-			HttpPost request = new HttpPost(uri);
-
-			// Request headers.
-			request.setHeader("Content-Type", "application/octet-stream");
-			request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-
-			// Request body.
-			// StringEntity reqEntity = new StringEntity(imageWithFaces);
-			if (image != null) {
-				FileEntity fileEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);
-				request.setEntity(fileEntity);
-			}
-
-			// Execute the REST API call and get the response entity.
-			HttpResponse response = httpclient.execute(request);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
-				ObjectMapper mapper = new ObjectMapper();
+        List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
 
 
-				String jsonString = EntityUtils.toString(entity).trim();
-				// amennyiben ezzel kezdõdik, akkor az tömb...
-				
-				//TODO: megcsinálni, hogy több arcot felismerjen
-				if (jsonString.charAt(0) == '[') {
-					
-					JSONArray jsonArray = new JSONArray(jsonString);
-		            System.out.println(jsonArray.toString(2));
+        HttpClient httpclient = HttpClientBuilder.create().build();
 
-					// így egy rendes objektumba rakhatjuk...
-					detectedFaces = mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class));
-					// TODO Controller osztályon keresztül átadni
-					return detectedFaces;
-				}
-				// amennyiben ezzel kezdõdik, akkor az csak egy objektum...
-				else if (jsonString.charAt(0) == '{') {
-					
-					JSONArray jsonArray = new JSONArray(jsonString);
-		            System.out.println(jsonArray.toString(2));
-					
-					
-					detectedFaces.add(mapper.readValue(jsonString, DetectedFace.class));
-					return detectedFaces;
-					
-				} else {
-					System.out.println(jsonString);
-				}
-			}
-			throw new RequestFailedException();
-		}
-		catch (Exception e) {
-			// Display error message.
-			System.out.println(e.getMessage());
-			return null;
-		}
-	}
-	
-	public VerifyResult sendVerifyRequest(String faceId1, String faceId2) {
-		
-		HttpClient httpclient = HttpClientBuilder.create().build();
+        try {
+            URIBuilder builder = new URIBuilder(uriBaseforURLDetect);
 
-		try {
-			URIBuilder builder = new URIBuilder(uriBaseforVerify);
+            // Request parameters. All of them are optional.
+            builder.setParameter("returnFaceId", "true");
+            builder.setParameter("returnFaceLandmarks", "false");
+            builder.setParameter("returnFaceAttributes", faceAttributes);
 
-			// Prepare the URI for the REST API call.
-			URI uri = builder.build();
-			HttpPost request = new HttpPost(uri);
+            // Prepare the URI for the REST API call.
+            URI uri = builder.build();
+            HttpPost request = new HttpPost(uri);
 
-			// Request headers.
-			request.setHeader("Content-Type", "application/json");
-			request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-			
-			// Request body.
-			JSONObject json = new JSONObject();
-			json.put("faceId1", faceId1);
-			json.put("faceId2", faceId2);
-			StringEntity reqEntity = new StringEntity(json.toString());
-			request.setEntity(reqEntity);
-			
+            // Request headers.
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
 
-			// Execute the REST API call and get the response entity.
-			HttpResponse response = httpclient.execute(request);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				ObjectMapper mapper = new ObjectMapper();
+            // Request body.
+            StringEntity reqEntity = new StringEntity(imageWithFaces);
+            request.setEntity(reqEntity);
 
-				// Format and display the JSON response.
-				System.out.println("REST Response:\n");
 
-				String jsonString = EntityUtils.toString(entity).trim();
-				
-				if (jsonString.charAt(0) == '{') {
-					VerifyResult result = mapper.readValue(jsonString, VerifyResult.class);
-					
-					return result;
-					
-				} else {
-					System.out.println(jsonString);					
-				}
-			}
-			throw new RequestFailedException();
-		} catch (Exception e) {
-			// Display error message.
-			System.out.println(e.getMessage());
-			return null;
-		}
-	}
-	
-	
+            // Execute the REST API call and get the response entity.
+            HttpResponse response = httpclient.execute(request);
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                ObjectMapper mapper = new ObjectMapper();
+
+                // Format and display the JSON response.
+                System.out.println("REST Response:\n");
+
+                String jsonString = EntityUtils.toString(entity).trim();
+                // amennyiben ezzel kezdõdik, akkor az tömb...
+                if (jsonString.charAt(0) == '[') {
+
+                    JSONArray jsonArray = new JSONArray(jsonString);
+                    System.out.println(jsonArray.toString(2));
+
+                    // Így egy rendes objektumba rakhatjuk...
+                    detectedFaces.addAll(mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class)));
+                } else {
+                    System.out.println(jsonString);
+                }
+            }
+        } catch (Exception e) {
+            // Display error message.
+            System.out.println(e.getMessage());
+        }
+
+        return detectedFaces;
+    }
+
+    // Ez arra az esetre, ha beolvasott képes kérést küldünk.
+    public List<DetectedFace> buildAndSendHttpRequestFromLocalContent(File image) {
+
+        List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
+        HttpClient httpclient = HttpClientBuilder.create().build();
+
+        try {
+            URIBuilder builder = new URIBuilder(uriBaseforLocalContentDetect);
+
+            // Request parameters. All of them are optional.
+            builder.setParameter("returnFaceId", "true");
+            builder.setParameter("returnFaceLandmarks", "false");
+            builder.setParameter("returnFaceAttributes", faceAttributes);
+
+            // Prepare the URI for the REST API call.
+            URI uri = builder.build();
+            HttpPost request = new HttpPost(uri);
+
+            // Request headers.
+            request.setHeader("Content-Type", "application/octet-stream");
+            request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+
+            // Request body.
+            // StringEntity reqEntity = new StringEntity(imageWithFaces);
+            if (image != null) {
+                FileEntity fileEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);
+                request.setEntity(fileEntity);
+            }
+
+
+            HttpResponse response = httpclient.execute(request);
+
+            HttpEntity entity = response.getEntity();
+
+            if (entity != null) {
+
+                ObjectMapper mapper = new ObjectMapper();
+
+
+                String jsonString = null;
+                try {
+                    jsonString = EntityUtils.toString(entity).trim();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // amennyiben ezzel kezdõdik, akkor az tömb...
+                if (jsonString.charAt(0) == '[') {
+
+                    JSONArray jsonArray = new JSONArray(jsonString);
+                    System.out.println(jsonArray.toString(2));
+
+                    // így egy rendes objektumba rakhatjuk...
+
+                    try {
+                        detectedFaces.addAll(mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class)));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println(jsonString);
+                }
+            }
+        } catch (Exception e) {
+            // Display error message.
+            System.out.println(e.getMessage());
+        }
+
+
+        return detectedFaces;
+    }
+
+    public VerifyResult sendVerifyRequest(String faceId1, String faceId2) {
+
+        VerifyResult vf = new VerifyResult();
+
+        HttpClient httpclient = HttpClientBuilder.create().build();
+
+        try {
+            URIBuilder builder = new URIBuilder(uriBaseforVerify);
+
+            // Prepare the URI for the REST API call.
+            URI uri = builder.build();
+            HttpPost request = new HttpPost(uri);
+
+            // Request headers.
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+
+            // Request body.
+            JSONObject json = new JSONObject();
+            json.put("faceId1", faceId1);
+            json.put("faceId2", faceId2);
+            StringEntity reqEntity = new StringEntity(json.toString());
+            request.setEntity(reqEntity);
+
+
+            // Execute the REST API call and get the response entity.
+            HttpResponse response = httpclient.execute(request);
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                ObjectMapper mapper = new ObjectMapper();
+
+                // Format and display the JSON response.
+                System.out.println("REST Response:\n");
+
+                String jsonString = EntityUtils.toString(entity).trim();
+                System.out.println(jsonString);
+
+                if (jsonString.charAt(0) == '{') {
+
+                    VerifyResult temp = mapper.readValue(jsonString, VerifyResult.class);
+
+                    vf.withConfidence(temp.confidence());
+                    vf.withIsIdentical(temp.isIdentical());
+
+
+                } else {
+                    System.out.println(jsonString);
+                }
+            }
+        } catch (Exception e) {
+            // Display error message.
+            System.out.println(e.getMessage());
+        }
+
+        return vf;
+    }
+
+
 }

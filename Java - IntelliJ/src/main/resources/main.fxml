@@ -7,12 +7,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="TOP_CENTER" prefHeight="900.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxmlController.MainController">
+<VBox alignment="TOP_CENTER" prefHeight="900.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxmlController.MainController">
  
   <children>
       <fx:include fx:id="menu" source="menuBar.fxml" />
       <ImageView fx:id="image" fitHeight="300.0" fitWidth="450.0" pickOnBounds="true" preserveRatio="true" />
-      <Text fx:id="description" textAlignment="CENTER" />
+      <Text fx:id="description" onScroll="#onScroll" textAlignment="CENTER" />
       <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0">
          <children>
             <Button fx:id="imageChooserButton" alignment="CENTER" mnemonicParsing="false" onAction="#onImageChooserButtonPressed" text="Kép kiválasztása" textAlignment="CENTER">

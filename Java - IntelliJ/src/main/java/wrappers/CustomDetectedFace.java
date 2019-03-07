@@ -1,6 +1,7 @@
 package wrappers;
 
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
+import com.microsoft.azure.cognitiveservices.vision.faceapi.models.FaceRectangle;
 
 
 public class CustomDetectedFace {
@@ -12,6 +13,7 @@ public class CustomDetectedFace {
 	private CustomHair customHair;
 	private CustomMakeup customMakeup;
 	private CustomOcclusion customOcclusion;
+	private FaceRectangle faceRectangle;
 	
 	public CustomDetectedFace(DetectedFace detectedFace) {
 		this.detectedFace = detectedFace;
@@ -21,6 +23,7 @@ public class CustomDetectedFace {
 		this.customHair = new CustomHair(this.detectedFace.faceAttributes().hair());
 		this.customMakeup = new CustomMakeup(this.detectedFace.faceAttributes().makeup());
 		this.customOcclusion = new CustomOcclusion(this.detectedFace.faceAttributes().occlusion());
+		this.faceRectangle = this.detectedFace.faceRectangle();
 	}
 	
 	public String getGender() {
@@ -94,6 +97,9 @@ public class CustomDetectedFace {
 		
 		return ret;
 	}
-	
+
+	public FaceRectangle getFaceRectangle(){
+		return this.faceRectangle;
+	}
 	
 }

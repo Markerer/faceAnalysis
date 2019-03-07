@@ -34,12 +34,8 @@ public class FaceComparisonController implements Initializable {
 	
 	private File leftImageFile;
 	private File rightImageFile;
-	
-	private boolean stopCamera = true;
-	private Webcam selWebCam = null;
-	private BufferedImage grabbedImage;
-	private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<Image>();
-	
+
+	private Camera camera;
 	
 	@FXML
 	private MenuController menuController;
@@ -75,161 +71,53 @@ public class FaceComparisonController implements Initializable {
 	private void onRightImageButtonPressed(final ActionEvent event) {
 		this.rightImageFile = fileChoosing(this.rightImage);
 	}
-	
-	private class WebCamInfo {
 
-		private String webCamName;
-		private int webCamIndex;
-
-		public String getWebCamName() {
-			return webCamName;
-		}
-
-		public void setWebCamName(String webCamName) {
-			this.webCamName = webCamName;
-		}
-
-		public int getWebCamIndex() {
-			return webCamIndex;
-		}
-
-		public void setWebCamIndex(int webCamIndex) {
-			this.webCamIndex = webCamIndex;
-		}
-
-		@Override
-		public String toString() {
-			return webCamName;
-		}
-	}
-	
-	protected void initializeWebCam() {
-
-		Task<Void> webCamIntilizer = new Task<Void>() {
-
-			@Override
-			protected Void call() throws Exception {
-
-				if (selWebCam == null) {
-					selWebCam = Webcam.getDefault();
-					selWebCam.setViewSize(WebcamResolution.VGA.getSize());
-				} else {
-					closeCamera();
-					selWebCam = Webcam.getDefault();
-					selWebCam.setViewSize(WebcamResolution.VGA.getSize());
-				}
-				
-				return null;
-			}
-
-		};
-
-		new Thread(webCamIntilizer).start();
-	}
-	
-	protected void startWebCamStream() {
-
-		stopCamera = false;
-		openCamera();
-		Task<Void> task = new Task<Void>() {
-
-			@Override
-			protected Void call() throws Exception {
-
-				while (!stopCamera && selWebCam.isOpen()) {
-					try {
-						if ((grabbedImage = selWebCam.getImage()) != null) {
-
-							Platform.runLater(new Runnable() {
-
-								public void run() {
-									final Image mainimage = SwingFXUtils
-										.toFXImage(grabbedImage, null);
-									imageProperty.set(mainimage);
-								}
-							});
-
-							grabbedImage.flush();
-
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-
-				return null;
-			}
-
-		};
-		Thread th = new Thread(task);
-		th.setDaemon(true);
-		th.start();
-		rightImage.imageProperty().bind(imageProperty);
-
-	}
-	
-	private void closeCamera() {
-		if (selWebCam != null) {
-			selWebCam.close();
-		}
-	}
-	
-	private void openCamera() {
-		if(selWebCam != null) {
-			selWebCam.open();
-		}
-	}
-	
-	
 	@FXML
 	private void onWebcamButtonPressed(final ActionEvent event) throws IOException {
 		
 	
-		if(stopCamera && selWebCam != null) {
+		if(camera.isStopCamera() && !camera.isWebcamNull()) {
 			this.webcamButton.setText("Kép készítése");
-			startWebCamStream();
+			camera.startWebCamStream(rightImage);
 			rightImageButton.setDisable(true);
 		} else {
-			if(!stopCamera && selWebCam != null) {
-				BufferedImage image = selWebCam.getImage();
+			if(!camera.isStopCamera() && !camera.isWebcamNull()) {
+				BufferedImage image = camera.getWebcamImage();
 				ImageIO.write(image, "PNG", new File("captured.png"));
 				this.webcamButton.setText("Webkamera megnyitása");
-				closeCamera();
+				camera.closeCamera();
 				rightImageButton.setDisable(false);
 				
 				rightImageFile = new File("captured.png");
 				Image img = new Image(rightImageFile.toURI().toString());
 				rightImage.imageProperty().unbind();
 				rightImage.setImage(img);
-				stopCamera = true;
+				camera.setStopCamera(true);
 			}
 		}		
 	}
 	
-	
-	// TODO Controlleren keresztül REST Api hívás...
+
 	@FXML
 	private void onComparisonButtonPressed(final ActionEvent event) {
-		if(leftImageFile != null && rightImageFile != null) {
-			comparisonDescription.setText(UI.controller.CompareTwoPictures(leftImageFile, rightImageFile));
-		}
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				if(leftImageFile != null && rightImageFile != null) {
+					comparisonDescription.setText(UI.controller.CompareTwoPictures(leftImageFile, rightImageFile));
+				}
+				return null;
+			}
+		};
+
+		Thread t = new Thread(task);
+		t.start();
 	}
 	
 	
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		ObservableList<WebCamInfo> options = FXCollections.observableArrayList();
-		int webCamCounter = 0;
-		for (Webcam webcam : Webcam.getWebcams()) {
-			WebCamInfo webCamInfo = new WebCamInfo();
-			webCamInfo.setWebCamIndex(webCamCounter);
-			webCamInfo.setWebCamName(webcam.getName());
-			options.add(webCamInfo);
-			webCamCounter++;
-		}
-		// A legelső webcamot választjuk ki egyelőre, bővítési lehetőség (választás) egy ComboBox-al mondjuk...
-		if(options.size() > 0) {
-			initializeWebCam();
-		}
+		camera = new Camera();
+		camera.initializeWebCam();
 	}
 
 	private File fileChoosing(final ImageView imageView) {

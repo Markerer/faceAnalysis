@@ -9,8 +9,5 @@
         <module name="faceAnalysis" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="faceAnalysis" target="8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

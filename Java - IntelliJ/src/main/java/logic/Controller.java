@@ -18,8 +18,8 @@ public class Controller {
 		this.rh = rh;
 	}
 	public List<DetectedFace> AnalyseLocalPicture(File image) {
-		List<DetectedFace> detectedFace = rh.buildAndSendHttpRequestFromLocalContent(image);		
-		
+		List<DetectedFace> detectedFace = rh.buildAndSendHttpRequestFromLocalContent(image);
+
 		return detectedFace;
 	}
 	
