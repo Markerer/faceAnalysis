@@ -2,6 +2,7 @@ package fxmlController;
 
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.FaceRectangle;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -55,7 +56,7 @@ public class MainController implements Initializable {
     private int actualDisplayedRecord = 0;
 
     @FXML
-    private void onScroll(final ScrollEvent event) throws IOException {
+    private void onScroll(final ScrollEvent event) {
         if(customDetectedFaces.size() > 1) {
             // if the scroll was upwards
             if (event.getDeltaY() > 0.0) {
@@ -99,13 +100,13 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void onAnalyzeButtonPressed(final ActionEvent event) throws InterruptedException {
+    private void onAnalyzeButtonPressed(final ActionEvent event) {
         // interfészes cuccos, ehelyett Controlleren keresztül hívás
         // Listát kapunk vissza, jelenleg csak az 1. elemmel foglalkozunk
         // TODO bővítési lehetőség (több arc tulajdonságának kiírása)
         Task<Void> task = new Task<Void>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 List<DetectedFace> detectedFaces = UI.controller.AnalyseLocalPicture(imageFile);
 
                 if (detectedFaces.size() > 0) {
@@ -155,7 +156,7 @@ public class MainController implements Initializable {
         customDetectedFaces = new ArrayList<>();
     }
 
-    private void drawRectangleOnImage(int numOfRecord) throws IOException {
+    private void drawRectangleOnImage(int numOfRecord) {
         if(this.customDetectedFaces.size() > numOfRecord){
             Task<Void> task = new Task<Void>() {
                 @Override
@@ -176,9 +177,7 @@ public class MainController implements Initializable {
                     graphics2D.dispose();
 
 
-                    File file = new File("temporaryIMG.png");
-                    ImageIO.write(newImage, "png", file);
-                    Image temp = new Image(file.toURI().toString());
+                    Image temp = SwingFXUtils.toFXImage(newImage, null);
                     image.setImage(temp);
                     return null;
                 }

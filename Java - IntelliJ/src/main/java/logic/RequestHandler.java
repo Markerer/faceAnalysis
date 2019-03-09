@@ -103,7 +103,7 @@ public class RequestHandler {
     }
 
     // Ez arra az esetre, ha beolvasott képes kérést küldünk.
-    public List<DetectedFace> buildAndSendHttpRequestFromLocalContent(File image) {
+    List<DetectedFace> buildAndSendHttpRequestFromLocalContent(File image) {
 
         List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
         HttpClient httpclient = HttpClientBuilder.create().build();
@@ -148,20 +148,22 @@ public class RequestHandler {
                     e.printStackTrace();
                 }
                 // amennyiben ezzel kezdõdik, akkor az tömb...
-                if (jsonString.charAt(0) == '[') {
+                if (jsonString != null) {
+                    if (jsonString.charAt(0) == '[') {
 
-                    JSONArray jsonArray = new JSONArray(jsonString);
-                    System.out.println(jsonArray.toString(2));
+                        JSONArray jsonArray = new JSONArray(jsonString);
+                        System.out.println(jsonArray.toString(2));
 
-                    // így egy rendes objektumba rakhatjuk...
+                        // így egy rendes objektumba rakhatjuk...
 
-                    try {
-                        detectedFaces.addAll(mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class)));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        try {
+                            detectedFaces.addAll(mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class)));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println(jsonString);
                     }
-                } else {
-                    System.out.println(jsonString);
                 }
             }
         } catch (Exception e) {
@@ -173,7 +175,7 @@ public class RequestHandler {
         return detectedFaces;
     }
 
-    public VerifyResult sendVerifyRequest(String faceId1, String faceId2) {
+    VerifyResult sendVerifyRequest(String faceId1, String faceId2) {
 
         VerifyResult vf = new VerifyResult();
 

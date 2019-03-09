@@ -19,12 +19,12 @@ public class Camera {
     private BufferedImage grabbedImage;
     private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<Image>();
 
-    public void initializeWebCam() {
+    void initializeWebCam() {
 
         Task<Void> webCamIntilizer = new Task<Void>() {
 
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
 
                 if (selWebCam == null) {
                     selWebCam = Webcam.getDefault();
@@ -43,26 +43,23 @@ public class Camera {
         new Thread(webCamIntilizer).start();
     }
 
-    public void startWebCamStream(ImageView imageView) {
+    void startWebCamStream(ImageView imageView) {
 
         stopCamera = false;
         openCamera();
         Task<Void> task = new Task<Void>() {
 
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
 
                 while (!stopCamera && selWebCam.isOpen()) {
                     try {
                         if ((grabbedImage = selWebCam.getImage()) != null) {
 
-                            Platform.runLater(new Runnable() {
-
-                                public void run() {
-                                    final Image mainimage = SwingFXUtils
-                                            .toFXImage(grabbedImage, null);
-                                    imageProperty.set(mainimage);
-                                }
+                            Platform.runLater(() -> {
+                                final Image mainimage = SwingFXUtils
+                                        .toFXImage(grabbedImage, null);
+                                imageProperty.set(mainimage);
                             });
 
                             grabbedImage.flush();
@@ -84,31 +81,31 @@ public class Camera {
 
     }
 
-    public void closeCamera() {
+    void closeCamera() {
         if (selWebCam != null) {
             selWebCam.close();
         }
     }
 
-    public void openCamera() {
+    private void openCamera() {
         if (selWebCam != null) {
             selWebCam.open();
         }
     }
 
-    public BufferedImage getWebcamImage(){
+    BufferedImage getWebcamImage(){
         return selWebCam.getImage();
     }
 
-    public void setStopCamera(boolean value){
+    void setStopCamera(boolean value){
         this.stopCamera = value;
     }
 
-    public boolean isStopCamera(){
+    boolean isStopCamera(){
         return stopCamera;
     }
 
-    public boolean isWebcamNull(){
+    boolean isWebcamNull(){
         return selWebCam == null;
     }
 }
