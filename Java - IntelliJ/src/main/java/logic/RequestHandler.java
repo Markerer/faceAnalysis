@@ -43,8 +43,10 @@ public class RequestHandler {
 
     }
 
-    // Ez arra az eshetőségre, ha URL-ből is akarunk képet beolvasni...
-    public List<DetectedFace> buildAndSendHttpRequestFromURL() {
+
+    public List<DetectedFace> buildAndSendHttpRequestFromURL(String url) {
+
+        url = "{\"url\":\"" + url + "\"}";
 
         List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
 
@@ -68,7 +70,7 @@ public class RequestHandler {
             request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
 
             // Request body.
-            StringEntity reqEntity = new StringEntity(imageWithFaces);
+            StringEntity reqEntity = new StringEntity(url);
             request.setEntity(reqEntity);
 
 

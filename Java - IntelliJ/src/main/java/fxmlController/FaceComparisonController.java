@@ -82,12 +82,8 @@ public class FaceComparisonController implements Initializable {
 			rightImageButton.setDisable(true);
 		} else {
 			if(!camera.isStopCamera() && !camera.isWebcamNull()) {
-				BufferedImage image = camera.getWebcamImage();
-				ImageIO.write(image, "PNG", new File("captured.png"));
-				this.webcamButton.setText("Webkamera megnyitása");
-				camera.closeCamera();
-				rightImageButton.setDisable(false);
-				
+				MainController.webcamHandling(camera, this.webcamButton, rightImageButton);
+
 				rightImageFile = new File("captured.png");
 				Image img = new Image(rightImageFile.toURI().toString());
 				rightImage.imageProperty().unbind();

@@ -10,10 +10,16 @@ import com.microsoft.azure.cognitiveservices.vision.faceapi.models.HairColor;
 public class CustomHair {
 
 	Hair hair;
+	List<CustomHairColor> customHairColors;
 
 	public CustomHair(Hair hair) {
 
 		this.hair = hair;
+		customHairColors = new ArrayList<>();
+		for(HairColor hc : hair.hairColor()){
+			customHairColors.add(new CustomHairColor(hc));
+		}
+		Collections.sort(customHairColors);
 	}
 
 	public String isVisible() {
@@ -33,13 +39,6 @@ public class CustomHair {
 	}
 
 	public String getHairColor() {
-
-		List<CustomHairColor> customHairColors = new ArrayList<CustomHairColor>();
-		
-		for (HairColor hc : hair.hairColor()) {
-			customHairColors.add(new CustomHairColor(hc));
-		}
-		Collections.sort(customHairColors);
 		
 		String hairColors = "";
 

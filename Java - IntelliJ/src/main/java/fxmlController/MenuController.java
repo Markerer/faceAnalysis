@@ -23,12 +23,12 @@ public class MenuController implements Initializable {
 	   majd a MainController-en keresztül átadjuk a Stage objektumot 
 	   a MenuControllernek, így tudjuk váltogatni a Scene-ket
 	   új ablak nyitása nélkül. */
-	public void setStage(final Stage stage) {
+	void setStage(final Stage stage) {
 		MenuController.actualStage = stage;
 	}
 	
 	// Getter, hogy a többi Controller is el tudja érni...
-	public static Stage getStage() {
+	static Stage getStage() {
 		return MenuController.actualStage;
 	}
 	

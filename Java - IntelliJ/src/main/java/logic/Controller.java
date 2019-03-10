@@ -15,10 +15,11 @@ public class Controller {
 	public Controller(RequestHandler rh) {
 		this.rh = rh;
 	}
-	public List<DetectedFace> AnalyseLocalPicture(File image) {
-		List<DetectedFace> detectedFace = rh.buildAndSendHttpRequestFromLocalContent(image);
 
-		return detectedFace;
+	public List<DetectedFace> AnalyseLocalPicture(File image) {
+		List<DetectedFace> detectedFaces = rh.buildAndSendHttpRequestFromLocalContent(image);
+
+		return detectedFaces;
 	}
 	
 	public String CompareTwoPictures(File image1, File image2) {
@@ -47,7 +48,9 @@ public class Controller {
 		}
 	}
 	
-	public void AnalysePictureURL() {
-		//TODO: megcsinálni ezt is
+	public List<DetectedFace> AnalysePictureURL(String url) {
+		List<DetectedFace> detectedFaces = rh.buildAndSendHttpRequestFromURL(url);
+
+		return detectedFaces;
 	}
 }
