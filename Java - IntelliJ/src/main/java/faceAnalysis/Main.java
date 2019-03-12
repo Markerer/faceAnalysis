@@ -16,21 +16,15 @@ public class Main {
             UI ui = new UI();
             ui.go();
         }
-        try {
-            Controller c = new Controller(new RequestHandler());
-            if (args.length == 1) {
-                c.AnalyseLocalPicture(new File(args[0]));
-            }
-            if (args.length == 2) {
-                c.CompareTwoPictures(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toString()+ args[0]),
-                        new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() + args[1]));
-            }
+        Controller c = new Controller(new RequestHandler());
+        if (args.length == 1) {
+            c.AnalyseLocalPicture(new File(args[0]));
         }
-        catch (URISyntaxException e){
-		    e.getMessage();
-            System.out.println("Probléma a fálj beolvasása közben.");
+        else if (args.length == 2) {
+            c.CompareTwoPictures(new File(args[0]), new File(args[1]));
         }
-
+        else
+            System.out.println("Valami probléma volt, írj a főnöknek.");
     }
 
 }
