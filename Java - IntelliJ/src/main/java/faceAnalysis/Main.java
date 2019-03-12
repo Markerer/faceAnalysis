@@ -6,9 +6,12 @@ public class Main {
 
 
 	public static void main(String[] args) {
-		
-		UI ui = new UI();
-		ui.go();
+
+		if (args.length == 0) {
+            UI ui = new UI();
+            ui.go();
+
+        }
 	}
 
 }
