@@ -69,22 +69,22 @@ public class FileUploadController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // Then retreive the process output
         try {
-            proc.waitFor();
+            proc.waitFor(); //bekell várni a jar file-t
         } catch (InterruptedException e) {
             System.out.println("Megszakítva");
             e.printStackTrace();
         }
-        java.io.InputStream is=proc.getInputStream();
+        java.io.InputStream is=proc.getInputStream(); //fosszar, de igykapjuk meg a kimenetét
         byte b[]= new byte[0];
         try {
             b = new byte[is.available()];
             is.read(b,0,b.length);
         } catch (IOException e) {
+            System.out.println("Ennek kb soha nem kéne megtörténnie lol");
             e.printStackTrace();
         }
-        lastFace = new String(b);
+        lastFace = new String(b);  //elmentem egy tagváltozóba
         return "redirect:/";
     }
 
