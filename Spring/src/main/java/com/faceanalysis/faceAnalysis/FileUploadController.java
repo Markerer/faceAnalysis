@@ -1,6 +1,8 @@
 package com.faceanalysis.faceAnalysis;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class FileUploadController {
 
     private final StorageService storageService;
+    private String lastFace;
 
     @Autowired
     public FileUploadController(StorageService storageService) {
@@ -38,6 +41,7 @@ public class FileUploadController {
                         "serveFile", path.getFileName().toString()).build().toString())
                 .collect(Collectors.toList()));
 
+        model.addAttribute("face", lastFace);
         return "uploadForm";
     }
 
@@ -58,6 +62,29 @@ public class FileUploadController {
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
 
+        // Run a java app in a separate system process
+        Process proc = null;
+        try {
+            proc = Runtime.getRuntime().exec("java -jar faceAnalysis.jar upload-dir/" + file.getOriginalFilename());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Then retreive the process output
+        try {
+            proc.waitFor();
+        } catch (InterruptedException e) {
+            System.out.println("Megszakítva");
+            e.printStackTrace();
+        }
+        java.io.InputStream is=proc.getInputStream();
+        byte b[]= new byte[0];
+        try {
+            b = new byte[is.available()];
+            is.read(b,0,b.length);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        lastFace = new String(b);
         return "redirect:/";
     }
 
