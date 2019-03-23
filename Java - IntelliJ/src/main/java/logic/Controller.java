@@ -18,7 +18,8 @@ public class Controller {
 	}
 
 	public List<DetectedFace> AnalyseLocalPicture(File image) {
-		List<DetectedFace> detectedFaces = rh.buildAndSendHttpRequestFromLocalContent(image);
+		String json = rh.buildAndSendHttpRequestFromLocalContent(image);
+		List<DetectedFace> detectedFaces = rh.getDetectedFacesFromJson(json);
 
 		return detectedFaces;
 	}
@@ -26,18 +27,21 @@ public class Controller {
 	public String CompareTwoPictures(File image1, File image2) {
 		String faceId1 = "";
 		String faceId2 = "";
-		
-		List<DetectedFace> detectedFace = rh.buildAndSendHttpRequestFromLocalContent(image1);
+
+		String json = rh.buildAndSendHttpRequestFromLocalContent(image1);
+		List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
 		if(detectedFace.size() > 0) {
 			faceId1 = detectedFace.get(0).faceId().toString();
 			System.out.println(faceId1);
 
-			detectedFace = rh.buildAndSendHttpRequestFromLocalContent(image2);
+			json = rh.buildAndSendHttpRequestFromLocalContent(image2);
+			detectedFace = rh.getDetectedFacesFromJson(json);
 			if (detectedFace.size() > 0) {
 				faceId2 = detectedFace.get(0).faceId().toString();
 				System.out.println(faceId2);
 
-				VerifyResult result = rh.sendVerifyRequest(faceId1, faceId2);
+				String verifyJson = rh.sendVerifyRequest(faceId1, faceId2);
+				VerifyResult result = rh.getVerifyResultFromJson(verifyJson);
 				CustomVerifyResult customVerifyResult = new CustomVerifyResult(result);
 				return customVerifyResult.toString();
 			} else {
@@ -50,7 +54,8 @@ public class Controller {
 	}
 	
 	public List<DetectedFace> AnalysePictureURL(String url) {
-		List<DetectedFace> detectedFaces = rh.buildAndSendHttpRequestFromURL(url);
+		String json = rh.buildAndSendHttpRequestFromURL(url);
+		List<DetectedFace> detectedFaces = rh.getDetectedFacesFromJson(json);
 
 		return detectedFaces;
 	}

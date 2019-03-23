@@ -1,12 +1,12 @@
 package faceAnalysis;
 
-import logic.Controller;
 import logic.RequestHandler;
 import view.UI;
-import wrappers.CustomDetectedFace;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.net.URISyntaxException;
+import java.io.IOException;
+import java.net.URL;
 
 public class Main {
 
@@ -17,12 +17,33 @@ public class Main {
             UI ui = new UI();
             ui.go();
         }
-        Controller c = new Controller(new RequestHandler());
+        RequestHandler rh = new RequestHandler();
         if (args.length == 1) {
-            System.out.println(new CustomDetectedFace(c.AnalyseLocalPicture(new File(args[0])).get(0)).toString());
+            if(args[0].contains("http")){
+                System.out.println(rh.buildAndSendHttpRequestFromURL(args[0]));
+            } else {
+                System.out.println(rh.buildAndSendHttpRequestFromLocalContent(new File(args[0])));
+            }
         }
         else if (args.length == 2) {
-            c.CompareTwoPictures(new File(args[0]), new File(args[1]));
+            String file1Id = "";
+            String file2Id = "";
+
+            if(args[0].contains("http")){
+                String json = rh.buildAndSendHttpRequestFromURL(args[0]);
+                file1Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
+            } else {
+                String json = rh.buildAndSendHttpRequestFromLocalContent(new File(args[0]));
+                file1Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
+            }
+            if(args[1].contains("http")){
+                String json = rh.buildAndSendHttpRequestFromURL(args[1]);
+                file2Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
+            } else {
+                String json = rh.buildAndSendHttpRequestFromLocalContent(new File(args[1]));
+                file2Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
+            }
+            System.out.println(rh.sendVerifyRequest(file1Id, file2Id));
         }
         else
             System.out.println("Valami probléma volt, írj a főnöknek.");

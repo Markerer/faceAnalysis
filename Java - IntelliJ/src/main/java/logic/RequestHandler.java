@@ -44,12 +44,9 @@ public class RequestHandler {
     }
 
 
-    public List<DetectedFace> buildAndSendHttpRequestFromURL(String url) {
+    public String buildAndSendHttpRequestFromURL(String url) {
 
         url = "{\"url\":\"" + url + "\"}";
-
-        List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
-
 
         HttpClient httpclient = HttpClientBuilder.create().build();
 
@@ -78,36 +75,21 @@ public class RequestHandler {
             HttpResponse response = httpclient.execute(request);
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-                ObjectMapper mapper = new ObjectMapper();
-
-                // Format and display the JSON response.
-                System.out.println("REST Response:\n");
 
                 String jsonString = EntityUtils.toString(entity).trim();
-                // amennyiben ezzel kezdõdik, akkor az tömb...
-                if (jsonString.charAt(0) == '[') {
-
-                    JSONArray jsonArray = new JSONArray(jsonString);
-                    System.out.println(jsonArray.toString(2));
-
-                    // Így egy rendes objektumba rakhatjuk...
-                    detectedFaces.addAll(mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class)));
-                } else {
-                    System.out.println(jsonString);
-                }
+                return jsonString;
             }
         } catch (Exception e) {
             // Display error message.
             System.out.println(e.getMessage());
         }
 
-        return detectedFaces;
+        return "";
     }
 
     // Ez arra az esetre, ha beolvasott képes kérést küldünk.
-    List<DetectedFace> buildAndSendHttpRequestFromLocalContent(File image) {
+    public String buildAndSendHttpRequestFromLocalContent(File image) {
 
-        List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
         HttpClient httpclient = HttpClientBuilder.create().build();
 
         try {
@@ -140,44 +122,17 @@ public class RequestHandler {
 
             if (entity != null) {
 
-                ObjectMapper mapper = new ObjectMapper();
-
-
-                String jsonString = null;
-                try {
-                    jsonString = EntityUtils.toString(entity).trim();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                // amennyiben ezzel kezdõdik, akkor az tömb...
-                if (jsonString != null) {
-                    if (jsonString.charAt(0) == '[') {
-
-                        JSONArray jsonArray = new JSONArray(jsonString);
-                        //System.out.println(jsonArray.toString(2));
-
-                        // így egy rendes objektumba rakhatjuk...
-
-                        try {
-                            detectedFaces.addAll(mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class)));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        //System.out.println(jsonString);
-                    }
-                }
+                String jsonString = EntityUtils.toString(entity).trim();
+                return jsonString;
             }
         } catch (Exception e) {
             // Display error message.
             System.out.println(e.getMessage());
         }
-
-
-        return detectedFaces;
+        return "";
     }
 
-    VerifyResult sendVerifyRequest(String faceId1, String faceId2) {
+    public String sendVerifyRequest(String faceId1, String faceId2) {
 
         VerifyResult vf = new VerifyResult();
 
@@ -206,32 +161,65 @@ public class RequestHandler {
             HttpResponse response = httpclient.execute(request);
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-                ObjectMapper mapper = new ObjectMapper();
-
-                // Format and display the JSON response.
-                System.out.println("REST Response:\n");
 
                 String jsonString = EntityUtils.toString(entity).trim();
-                System.out.println(jsonString);
-
-                if (jsonString.charAt(0) == '{') {
-
-                    VerifyResult temp = mapper.readValue(jsonString, VerifyResult.class);
-
-                    vf.withConfidence(temp.confidence());
-                    vf.withIsIdentical(temp.isIdentical());
-
-
-                } else {
-                    System.out.println(jsonString);
-                }
+                return jsonString;
             }
         } catch (Exception e) {
             // Display error message.
             System.out.println(e.getMessage());
         }
+        return "";
+    }
+
+
+    public VerifyResult getVerifyResultFromJson(String json){
+        VerifyResult vf = new VerifyResult();
+            ObjectMapper mapper = new ObjectMapper();
+
+            if (json.charAt(0) == '{') {
+
+                VerifyResult temp = null;
+                try {
+                    temp = mapper.readValue(json, VerifyResult.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                vf.withConfidence(temp.confidence());
+                vf.withIsIdentical(temp.isIdentical());
+
+
+            } else {
+                System.out.println(json);
+            }
 
         return vf;
+    }
+
+
+    public List<DetectedFace> getDetectedFacesFromJson(String json){
+        List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
+        ObjectMapper mapper = new ObjectMapper();
+        // amennyiben ezzel kezdõdik, akkor az tömb...
+        if (json != null) {
+            if (json.charAt(0) == '[') {
+
+                JSONArray jsonArray = new JSONArray(json);
+                //System.out.println(jsonArray.toString(2));
+
+                // így egy rendes objektumba rakhatjuk...
+
+                try {
+                    detectedFaces.addAll(mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, DetectedFace.class)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //System.out.println(jsonString);
+            }
+        }
+        return detectedFaces;
     }
 
 

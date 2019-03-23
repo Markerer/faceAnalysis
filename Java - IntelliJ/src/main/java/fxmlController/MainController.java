@@ -151,10 +151,10 @@ public class MainController implements Initializable {
         camera.initializeWebCam();
         customDetectedFaces = new ArrayList<>();
         imageFormats = new ArrayList<>();
-        imageFormats.add("JPG");
-        imageFormats.add("PNG");
+        imageFormats.add(".JPG");
+        imageFormats.add(".PNG");
         imageFormats.add("JPEG");
-        imageFormats.add("BMP");
+        imageFormats.add(".BMP");
         leftArrow.setVisible(false);
         rightArrow.setVisible(false);
     }
@@ -166,16 +166,22 @@ public class MainController implements Initializable {
                 protected Void call() throws Exception {
                     BufferedImage newImage = ImageIO.read(imageFile);
 
-                    FaceRectangle rectangleToDraw = customDetectedFaces.get(numOfRecord).getFaceRectangle();
-
                     Graphics2D graphics2D = newImage.createGraphics();
-                    graphics2D.setColor(Color.GREEN);
-                    graphics2D.setStroke(new BasicStroke(10));
-                    graphics2D.drawRect(
-                            rectangleToDraw.left(),
-                            rectangleToDraw.top(),
-                            rectangleToDraw.width(),
-                            rectangleToDraw.height());
+
+                    for(CustomDetectedFace face : customDetectedFaces){
+                        FaceRectangle rectangleToDraw = face.getFaceRectangle();
+                        if(face == customDetectedFaces.get(numOfRecord)) {
+                            graphics2D.setColor(Color.RED);
+                        } else {
+                            graphics2D.setColor(Color.GREEN);
+                        }
+                        graphics2D.setStroke(new BasicStroke(5));
+                        graphics2D.drawRect(
+                                rectangleToDraw.left(),
+                                rectangleToDraw.top(),
+                                rectangleToDraw.width(),
+                                rectangleToDraw.height());
+                    }
 
                     graphics2D.dispose();
 
@@ -230,9 +236,10 @@ public class MainController implements Initializable {
     @FXML
     public void onUrlAnalyzeButtonPressed(ActionEvent actionEvent) {
         String url = urltextfield.getText();
+
         if(!url.isEmpty()) {
             // megnézzük, hogy megfelelő-e a link (egy képformátumra végződik)
-            String format = url.substring(Math.max(url.length() - 3, 0));
+            String format = url.substring(Math.max(url.length() - 4, 0));
             if (!format.isEmpty()) {
                 boolean correctUrl = false;
                 format = format.toUpperCase();
@@ -249,7 +256,7 @@ public class MainController implements Initializable {
                             URL imageURL = new URL(url);
                             BufferedImage bufferedImage = ImageIO.read(imageURL);
                             File file = new File("temporaryIMG.png");
-                            ImageIO.write(bufferedImage, "png", file);
+                            ImageIO.write(bufferedImage, "", file);
                             imageFile = file;
                             Image temp = SwingFXUtils.toFXImage(bufferedImage, null);
                             imageView.setImage(temp);
