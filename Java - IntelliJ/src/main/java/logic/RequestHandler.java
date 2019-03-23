@@ -154,7 +154,7 @@ public class RequestHandler {
                     if (jsonString.charAt(0) == '[') {
 
                         JSONArray jsonArray = new JSONArray(jsonString);
-                        System.out.println(jsonArray.toString(2));
+                        //System.out.println(jsonArray.toString(2));
 
                         // így egy rendes objektumba rakhatjuk...
 
@@ -164,7 +164,7 @@ public class RequestHandler {
                             e.printStackTrace();
                         }
                     } else {
-                        System.out.println(jsonString);
+                        //System.out.println(jsonString);
                     }
                 }
             }

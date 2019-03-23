@@ -3,6 +3,7 @@ package faceAnalysis;
 import logic.Controller;
 import logic.RequestHandler;
 import view.UI;
+import wrappers.CustomDetectedFace;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -18,7 +19,7 @@ public class Main {
         }
         Controller c = new Controller(new RequestHandler());
         if (args.length == 1) {
-            c.AnalyseLocalPicture(new File(args[0]));
+            System.out.println(new CustomDetectedFace(c.AnalyseLocalPicture(new File(args[0])).get(0)).toString());
         }
         else if (args.length == 2) {
             c.CompareTwoPictures(new File(args[0]), new File(args[1]));
