@@ -75,16 +75,17 @@ public class FileUploadController {
             System.out.println("Megszakítva");
             e.printStackTrace();
         }
-        java.io.InputStream is=proc.getInputStream(); //fosszar, de igykapjuk meg a kimenetét
-        byte b[]= new byte[0];
+        InputStream i = proc.getInputStream();
+        StringBuilder sb = new StringBuilder();
         try {
-            b = new byte[is.available()];
-            is.read(b,0,b.length);
+            for(  int c = 0 ; ( c =  i.read() ) > -1  ; ) {
+                sb.append( ( char ) c );
+            }
+            i.close();
         } catch (IOException e) {
-            System.out.println("Ennek kb soha nem kéne megtörténnie lol");
             e.printStackTrace();
         }
-        lastFace = new String(b);  //elmentem egy tagváltozóba
+        lastFace = sb.toString();  //elmentem egy tagváltozóba
         return "redirect:/";
     }
 
