@@ -10,15 +10,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 
 @Controller
@@ -44,7 +42,7 @@ public class FileUploadController {
         return "uploadForm";
     }
 
-    @GetMapping("/files/{filename:.+}")
+    @RequestMapping(value = "/files/{filename:.+}", method = GET, produces = "image/png")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
 
@@ -52,7 +50,7 @@ public class FileUploadController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
-
+/*
     @PostMapping("/")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
@@ -61,31 +59,24 @@ public class FileUploadController {
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
 
-        // Run a java app in a separate system process
-        Process proc = null;
-        try {
-            proc = Runtime.getRuntime().exec("java -jar faceAnalysis.jar upload-dir/" + file.getOriginalFilename());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            proc.waitFor(); //bekell várni a jar file-t
-        } catch (InterruptedException e) {
-            System.out.println("Megszakítva");
-            e.printStackTrace();
-        }
-        InputStream i = proc.getInputStream();
-        StringBuilder sb = new StringBuilder();
-        try {
-            for(  int c = 0 ; ( c =  i.read() ) > -1  ; ) {
-                sb.append( ( char ) c );
-            }
-            i.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        lastFace = sb.toString();  //elmentem egy tagváltozóba
+        lastFace = BasicMethods.RunFaceAnalysis(file.getOriginalFilename());  //elmentem egy tagváltozóba
         return "redirect:/";
+    }
+*/
+
+    @RequestMapping(value = "/", method = POST, produces = "plain/text")
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+        String contentType = file.getContentType();
+        String type = contentType.split("/")[0];
+        if(type.equals("image")) {
+            storageService.store(file);
+
+            lastFace = BasicMethods.RunFaceAnalysis(file.getOriginalFilename());  //elmentem egy tagváltozóba
+
+            return ResponseEntity.ok("You successfully uploaded " + file.getOriginalFilename() + "!");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid image file!");
+        }
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)
