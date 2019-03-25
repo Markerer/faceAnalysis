@@ -50,19 +50,6 @@ public class FileUploadController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
-/*
-    @PostMapping("/")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
-
-        storageService.store(file);
-        redirectAttributes.addFlashAttribute("message",
-                "You successfully uploaded " + file.getOriginalFilename() + "!");
-
-        lastFace = BasicMethods.RunFaceAnalysis(file.getOriginalFilename());  //elmentem egy tagváltozóba
-        return "redirect:/";
-    }
-*/
 
     @RequestMapping(value = "/", method = POST, produces = "plain/text")
     public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
