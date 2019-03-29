@@ -5,6 +5,7 @@ import com.microsoft.azure.cognitiveservices.vision.faceapi.models.VerifyResult;
 import logic.Controller;
 import logic.RequestHandler;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import view.UI;
 import org.apache.commons.io.FileUtils;
 import wrappers.CustomDetectedFace;
@@ -47,11 +48,18 @@ public class Main {
                     list = controller.AnalyseLocalPicture(new File(args[0]));
                 }
                 List<CustomDetectedFace> customList = new ArrayList<>();
+                String json = "[{";
                 for(DetectedFace df : list){
+                    CustomDetectedFace temp = new CustomDetectedFace(df);
+                    json += temp.toString();
+                    json += "}";
                     customList.add(new CustomDetectedFace(df));
+                    if(customList.size() < list.size()){
+                        json += ", ";
+                    }
                 }
-                JSONArray jsonArray = new JSONArray(customList);
-                System.out.println(jsonArray.toString());
+                json += "]";
+                System.out.println(json);
             }
         }
         else if (args.length == 3) {
