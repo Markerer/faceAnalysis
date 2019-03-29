@@ -7,11 +7,13 @@ import logic.RequestHandler;
 import org.json.JSONArray;
 import view.UI;
 import org.apache.commons.io.FileUtils;
+import wrappers.CustomDetectedFace;
 import wrappers.CustomVerifyResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -38,15 +40,18 @@ public class Main {
             }
             // amennyiben a feldolgozott
             if(args[1].equals("processed")){
+                List<DetectedFace> list;
                 if (args[0].contains("http")) {
-                    List<DetectedFace> list = controller.AnalysePictureURL(args[0]);
-                    JSONArray jsonArray = new JSONArray(list);
-                    System.out.println(jsonArray.toString());
+                    list = controller.AnalysePictureURL(args[0]);
                 } else {
-                    List<DetectedFace> list = controller.AnalyseLocalPicture(new File(args[0]));
-                    JSONArray jsonArray = new JSONArray(list);
-                    System.out.println(jsonArray.toString());
+                    list = controller.AnalyseLocalPicture(new File(args[0]));
                 }
+                List<CustomDetectedFace> customList = new ArrayList<>();
+                for(DetectedFace df : list){
+                    customList.add(new CustomDetectedFace(df));
+                }
+                JSONArray jsonArray = new JSONArray(customList);
+                System.out.println(jsonArray.toString());
             }
         }
         else if (args.length == 3) {
