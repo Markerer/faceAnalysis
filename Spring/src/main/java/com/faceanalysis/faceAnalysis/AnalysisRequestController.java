@@ -26,7 +26,7 @@ public class AnalysisRequestController {
         File file = new File("upload-dir" +
                 "/" + filename);
         if(file.exists()) {
-            String json = BasicMethods.RunFaceAnalysis(filename);
+            String json = BasicMethods.RunFaceAnalysis(filename, true);
             return ResponseEntity.ok(json);
         }
         else {
@@ -45,7 +45,7 @@ public class AnalysisRequestController {
         if(file1.exists()) {
 
             if(file2.exists()) {
-                String json = BasicMethods.RunFaceComparison(filename1, filename2);
+                String json = BasicMethods.RunFaceComparison(filename1, filename2, true);
                 return ResponseEntity.ok(json);
             } else {
                 return ResponseEntity.badRequest().body("The second given file doesn't exist on our server.");

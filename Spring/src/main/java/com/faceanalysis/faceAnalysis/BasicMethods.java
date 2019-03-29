@@ -7,7 +7,7 @@ import java.io.InputStream;
 public class BasicMethods {
 
 
-    public static String RunFaceAnalysis(String filename) {
+    public static String RunFaceAnalysis(String filename, boolean processedResponse) {
         // Run a java app in a separate system process
         Process proc = null;
         try {
@@ -17,6 +17,11 @@ public class BasicMethods {
             } else {
                 cmd += "upload-dir/" + filename;
             }
+            if(processedResponse){
+                cmd += " processed";
+            } else {
+                cmd += " original";
+            }
                 proc = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             e.printStackTrace();
@@ -25,7 +30,7 @@ public class BasicMethods {
     }
 
 
-    public static String RunFaceComparison(String filename1, String filename2) {
+    public static String RunFaceComparison(String filename1, String filename2, boolean processedResponse) {
         // Run a java app in a separate system process
         Process proc = null;
         try {
@@ -41,6 +46,12 @@ public class BasicMethods {
             } else {
                 cmd += "upload-dir/" + filename2;
             }
+            if(processedResponse){
+                cmd += " processed";
+            } else {
+                cmd += " original";
+            }
+
             System.out.println(cmd);
             proc = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
