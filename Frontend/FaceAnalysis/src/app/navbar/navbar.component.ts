@@ -52,18 +52,22 @@ export class NavbarComponent implements OnInit {
 
   navigateToAdmin(): void {
     this.router.navigate(['admin']);
+    this.sidebarClose();
   }
 
   navigateToLogin(): void {
     this.router.navigate(['login']);
+    this.sidebarClose();
   }
 
   navigateToFaceAnalysis(): void {
     this.router.navigate(['faceanalysis']);
+    this.sidebarClose();
   }
 
   navigateToHome(): void {
     this.router.navigate(['']);
+    this.sidebarClose();
   }
 
 

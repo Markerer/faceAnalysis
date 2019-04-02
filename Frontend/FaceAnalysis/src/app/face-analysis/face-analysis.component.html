@@ -3,25 +3,33 @@
 <body class="bod">
 
     <label class="image-upload-container btn btn-bwm">
-        <span>Select Image</span>
-        <input #imageInput
-               type="file"
-               accept="image/*"
-               (change)="processFile(imageInput)">
-      </label>
+      <span>Select Image</span>
+      <input #imageInput
+             type="file"
+             accept="image/*"
+             (change)="processFile(imageInput)">
+    </label>
 
-      <div *ngIf="selectedFile" class="img-preview-container">
+    <div *ngIf="selectedFile" class="img-preview-container">
 
-          <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
-               [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
-          </div>
+      <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
+           [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
+      </div>
 
-          <div *ngIf="selectedFile.pending" class="img-loading-overlay">
-            <div class="img-spinning-circle"></div>
-          </div>
+      <div *ngIf="selectedFile.pending" class="img-loading-overlay">
+        <div class="img-spinning-circle"></div>
+      </div>
 
-          <div *ngIf="selectedFile.status === 'ok'" class="alert alert-success"> Image Uploaded Succesfuly!</div>
-          <div *ngIf="selectedFile.status === 'fail'" class="alert alert-danger"> Image Upload Failed!</div>
-        </div>
-</body>
-</html>
+      <div *ngIf="selectedFile.status === 'ok'" class="alert alert-success"> Image Uploaded Succesfuly!</div>
+      <div *ngIf="selectedFile.status === 'fail'" class="alert alert-danger"> Image Upload Failed!</div>
+    </div>
+
+    <app-camera (pictureTaken)="handleImage($event)"></app-camera>
+
+
+    <div style="text-align:center" class="snapshot" *ngIf="webcamImage">
+      <img class="resizableImage" [src]="webcamImage.imageAsDataUrl" />
+    </div>
+
+  </body>
+  </html>

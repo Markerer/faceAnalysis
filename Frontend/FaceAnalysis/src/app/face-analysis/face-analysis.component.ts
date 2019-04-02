@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ImageService } from '../image.service';
 
+import { WebcamImage } from 'ngx-webcam';
+
 class ImageSnippet {
   constructor(public src: string, public file: File) {}
 }
@@ -15,9 +17,19 @@ export class FaceAnalysisComponent implements OnInit {
   ngOnInit() {
   }
 
+
+  constructor(private imageService: ImageService) { }
+
+  // latest snapshot
+  public webcamImage: WebcamImage = null;
+
+  handleImage(webcamImage: WebcamImage) {
+    this.webcamImage = webcamImage;
+  }
+
+
   selectedFile: ImageSnippet;
 
-  constructor(private imageService: ImageService){}
 
   processFile(imageInput: any) {
     const file: File = imageInput.files[0];

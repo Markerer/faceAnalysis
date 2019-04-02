@@ -15,6 +15,7 @@ import { HomeComponent } from './home/home.component';
 import { MainService } from './main.service';
 import { WebcamModule} from 'ngx-webcam';
 import { HttpClientModule } from '@angular/common/http';
+import { CameraComponent } from './camera/camera.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { HttpClientModule } from '@angular/common/http';
     FaceAnalysisComponent,
     NavbarComponent,
     FooterComponent,
-    HomeComponent
+    HomeComponent,
+    CameraComponent
   ],
   imports: [
     NgbModule.forRoot(),

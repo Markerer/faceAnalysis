@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
 <body class="bod">
-    <webcam id="cam"></webcam><br>
+  <app-camera (pictureTaken)="handleImage($event)"></app-camera>
+
+  <div (window:resize)="onResize($event)" style="text-align:center" class="snapshot" *ngIf="webcamImage">
+    <img [src]="webcamImage.imageAsDataUrl" />
+  </div>
+  <br>
+  <div class="centerAligned">
     <button id="btn" type="button" class="btn btn-default">Login</button>
     <div id="link"> <h1> ITT LENNE A CSODÁS LINK</h1></div>
+  </div>
 </body>
 </html>
