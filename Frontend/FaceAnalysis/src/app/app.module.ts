@@ -13,6 +13,9 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
 import { HomeComponent } from './home/home.component';
 import { MainService } from './main.service';
+import { WebcamModule} from 'ngx-webcam';
+import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -29,7 +32,9 @@ import { MainService } from './main.service';
     FormsModule,
     RouterModule,
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    WebcamModule,
+    HttpClientModule
   ],
   providers: [MainService],
   bootstrap: [AppComponent]
