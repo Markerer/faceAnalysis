@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ImageService } from '../image.service';
+import { MainService } from '../main.service';
 
 import { WebcamImage } from 'ngx-webcam';
 
@@ -18,7 +18,7 @@ export class FaceAnalysisComponent implements OnInit {
   }
 
 
-  constructor(private imageService: ImageService) { }
+  constructor(private mainService: MainService) { }
 
   // latest snapshot
   public webcamImage: WebcamImage = null;
@@ -39,12 +39,12 @@ export class FaceAnalysisComponent implements OnInit {
 
       this.selectedFile = new ImageSnippet(event.target.result, file);
 
-      this.imageService.uploadImage(this.selectedFile.file).subscribe(
+      this.mainService.uploadImage(this.selectedFile.file).subscribe(
         (res) => {
-
+          console.log(res);
         },
         (err) => {
-
+          console.log(err);
         })
     });
 
