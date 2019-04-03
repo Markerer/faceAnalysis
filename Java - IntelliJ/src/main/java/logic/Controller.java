@@ -6,7 +6,6 @@ import java.util.List;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.VerifyResult;
 
-import wrappers.CustomDetectedFace;
 import wrappers.CustomVerifyResult;
 
 public class Controller {

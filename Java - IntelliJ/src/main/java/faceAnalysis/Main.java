@@ -1,5 +1,10 @@
 package faceAnalysis;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.DetectedFace;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.VerifyResult;
 import logic.Controller;
@@ -20,7 +25,7 @@ import java.util.List;
 public class Main {
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JsonProcessingException {
 
 		if (args.length == 0 || args.length > 3 ) {
             UI ui = new UI();
@@ -59,7 +64,18 @@ public class Main {
                     }
                 }
                 json += "]";
-                System.out.println(json);
+                //System.out.println(json);
+                ObjectMapper om = new ObjectMapper();
+                om.disable(MapperFeature.AUTO_DETECT_CREATORS,
+                        MapperFeature.AUTO_DETECT_FIELDS,
+                        MapperFeature.AUTO_DETECT_GETTERS,
+                        MapperFeature.AUTO_DETECT_IS_GETTERS);
+                // if you want to prevent an exception when classes have no annotated properties
+                om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+
+                String jsonTry = om.writeValueAsString(customList);
+                System.out.println(jsonTry);
             }
         }
         else if (args.length == 3) {

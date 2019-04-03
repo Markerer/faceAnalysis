@@ -57,7 +57,7 @@ public class FileUploadController {
         if(type.equals("image")) {
             storageService.store(file);
 
-            lastFace = BasicMethods.RunFaceAnalysis(file.getOriginalFilename(), true);  //elmentem egy tagváltozóba
+            lastFace = BasicMethods.RunFaceAnalysis(file.getOriginalFilename(), false);  //elmentem egy tagváltozóba
 
             return ResponseEntity.ok("You successfully uploaded " + file.getOriginalFilename() + "!");
         } else {

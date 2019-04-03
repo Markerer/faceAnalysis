@@ -4,13 +4,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.Hair;
 import com.microsoft.azure.cognitiveservices.vision.faceapi.models.HairColor;
 
 public class CustomHair {
 
+	@JsonIgnore
 	Hair hair;
+
+	@JsonIgnore
 	List<CustomHairColor> customHairColors;
+
+	@JsonProperty
+	String HairColor;
+
+	@JsonProperty("IsInvisible")
+	String IsInvisible;
+
+	@JsonProperty("IsBald")
+	String IsBald;
 
 	public CustomHair(Hair hair) {
 
@@ -20,7 +34,25 @@ public class CustomHair {
 			customHairColors.add(new CustomHairColor(hc));
 		}
 		Collections.sort(customHairColors);
+		HairColor = customHairColors.get(0).HairColor;
+		setValues();
 	}
+
+	private void setValues(){
+			if (!hair.invisible()) {
+				IsInvisible = "Nem";
+			} else {
+				IsInvisible = "Igen";
+			}
+
+
+			if (hair.bald() > 0.75) {
+				IsBald = "Igen";
+			} else {
+				IsBald = "Nem";
+			}
+	}
+
 
 	public String isVisible() {
 		if (!hair.invisible()) {

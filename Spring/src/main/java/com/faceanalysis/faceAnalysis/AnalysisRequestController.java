@@ -25,7 +25,7 @@ public class AnalysisRequestController {
     public ResponseEntity<String> getFaceAnalysis(@RequestParam("filename") String filename){
         File file = new File("upload-dir" +
                 "/" + filename);
-        if(file.exists()) {
+        if(file.exists() || filename.contains("http")) {
             String json = BasicMethods.RunFaceAnalysis(filename, true);
             return ResponseEntity.ok(json);
         }
