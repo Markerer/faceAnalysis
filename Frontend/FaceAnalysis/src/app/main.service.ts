@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AppSettings } from './appsettings';
+import { VerifyResult } from './model/VerifyResult';
 
 @Injectable({
   providedIn: 'root'
@@ -11,19 +12,15 @@ export class MainService {
   constructor(private http: HttpClient) { }
 
 
-  public uploadImage(image: File): Observable<Object> {
-    const formData = new FormData();
-
-    formData.append('file', image, image.name);
-
-    return this.http.post(AppSettings.API_ROOT + '', formData, {
+  public uploadImage(uploadData: FormData): Observable<Object> {
+      return this.http.post(AppSettings.API_ROOT + '/admin', uploadData, {
       responseType: 'text'
      });
   }
 
 
-  public getImage(filename: string): Observable<Blob> {
-    return this.http.get(AppSettings.API_ROOT + 'files/' + filename, {
+  public getImage(filepath: string): Observable<Blob> {
+    return this.http.get(filepath, {
       responseType: 'blob'
     });
   }
@@ -32,8 +29,8 @@ export class MainService {
     return this.http.get<Object[]>(AppSettings.API_ROOT + "analysis?filename=" + filename);
   }
 
-  public getFaceComparison(filename: string): Observable<Object> {
-    return this.http.get(AppSettings.API_ROOT + 'compareAll?filename=' + filename);
+  public getFaceComparison(filename: string): Observable<VerifyResult> {
+    return this.http.get<VerifyResult>(AppSettings.API_ROOT + 'compareAdmin?filename=' + filename);
   }
 
 }

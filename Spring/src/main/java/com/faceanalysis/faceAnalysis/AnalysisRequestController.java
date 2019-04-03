@@ -75,7 +75,7 @@ public class AnalysisRequestController {
         if(file1.exists()){
             List<String> locations = new ArrayList<>(storageService.loadAll().map(
                     path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-                            "serveFile", path.getFileName().toString()).build().toString())
+                            "serveAdminFile", path.getFileName().toString()).build().toString())
                     .collect(Collectors.toList()));
 
             for(String file : locations){
@@ -86,20 +86,22 @@ public class AnalysisRequestController {
                 if(!compareTo.equals(filename)) {
                     String json = BasicMethods.RunAdminFaceComparison(filename, compareTo, true);
                     JSONObject jsonObject = null;
-                    try {
-                        jsonObject = new JSONObject(json);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        double temp = (double) jsonObject.get("Confidence");
-                        if (temp > confidence) {
-                            confidence = temp;
-                            pathToMostSimilarImage = file;
-                            mostSimilarJsonObject = jsonObject;
+                    if (!json.equals("") && json.contains("{")) {
+                        try {
+                            jsonObject = new JSONObject(json);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        try {
+                            double temp = (double) jsonObject.get("Confidence");
+                            if (temp > confidence) {
+                                confidence = temp;
+                                pathToMostSimilarImage = file;
+                                mostSimilarJsonObject = jsonObject;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -109,6 +111,8 @@ public class AnalysisRequestController {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            storageService.deleteOne(filename);
 
             return ResponseEntity.ok(mostSimilarJsonObject.toString());
 

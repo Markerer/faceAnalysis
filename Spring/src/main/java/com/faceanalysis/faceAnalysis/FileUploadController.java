@@ -1,6 +1,7 @@
 package com.faceanalysis.faceAnalysis;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,13 +44,17 @@ public class FileUploadController {
         return "uploadForm";
     }
 
-    @RequestMapping(value = "/files/{filename:.+}", method = GET, produces = "image/png")
+    @RequestMapping(value = "/files/{filename:.+}", method = GET)
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
         storageService.changeRootLocation("upload-dir");
         Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "image/png");
+        return new ResponseEntity<>(file, headers, HttpStatus.OK);
+
+        /*return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE,
+                "attachment; filename=\"" + file.getFilename() + "\"").body(file);*/
     }
 
     @RequestMapping(value = "/", method = POST, produces = "plain/text")
@@ -122,8 +128,13 @@ public class FileUploadController {
     public ResponseEntity<Resource> serveAdminFile(@PathVariable String filename) {
         storageService.changeRootLocation("admin-upload-dir");
         Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "image/png");
+        return new ResponseEntity<>(file, headers, HttpStatus.OK);
+
+
+        /*return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + file.getFilename() + "\"").body(file);*/
     }
 
     @RequestMapping(value = "/files/admin", method = GET, produces = "application/json")
@@ -133,7 +144,7 @@ public class FileUploadController {
 
         List<String> locations = new ArrayList<>(storageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-                        "serveFile", path.getFileName().toString()).build().toString())
+                        "serveAdminFile", path.getFileName().toString()).build().toString())
                 .collect(Collectors.toList()));
 
         String json = new ObjectMapper().writeValueAsString(locations);

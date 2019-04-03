@@ -38,8 +38,10 @@ export class FaceAnalysisComponent implements OnInit {
     reader.addEventListener('load', (event: any) => {
 
       this.selectedFile = new ImageSnippet(event.target.result, file);
+      const formData = new FormData();
 
-      this.mainService.uploadImage(this.selectedFile.file).subscribe(
+      formData.append('file', file, file.name);
+      this.mainService.uploadImage(formData).subscribe(
         (res) => {
           console.log(res);
         },

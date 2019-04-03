@@ -8,8 +8,23 @@
   </div>
   <br>
   <div class="centerAligned">
-    <button id="btn" type="button" class="btn btn-default">Login</button>
-    <div id="link"> <h1> ITT LENNE A CSODÁS LINK</h1></div>
+    <div>
+      <img id="mostSimilarFace" src="{{lastVerifyResult.Image}}" />
+    </div>
+    <div *ngIf="successUpload" type="success" class="alert alert-success" (close)="successUpload = null">
+      {{ successUpload }}
+
+    </div>
+    <div *ngIf="successMessage" type="success" class="alert alert-success" (close)="successMessage = null">
+      {{ successMessage }}
+
+    </div>
+
+    <div *ngIf="alertMessage" type="danger" class="alert alert-danger" (close)="alertMessage = null">
+      {{ alertMessage }}
+    </div>
+    <button id="btn" type="button" class="btn btn-default" style="margin-top: 30px;" (click)="onLoginButtonClicked()">Login</button>
+    <div> <h1 id="link"></h1></div>
   </div>
 </body>
 </html>
