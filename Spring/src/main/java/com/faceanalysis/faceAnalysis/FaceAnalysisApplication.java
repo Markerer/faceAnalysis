@@ -21,7 +21,8 @@ public class FaceAnalysisApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/*").allowedOrigins("*");
+				registry.addMapping("/*").allowedOrigins("*").allowedMethods("*");
+
 			}
 		};
 	}
@@ -29,7 +30,6 @@ public class FaceAnalysisApplication {
 	@Bean
 	CommandLineRunner init(StorageService storageService) {
 		return (args) -> {
-			storageService.deleteAll();
 			storageService.init();
 		};
 	}

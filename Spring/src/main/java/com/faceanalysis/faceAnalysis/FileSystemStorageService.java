@@ -1,5 +1,6 @@
 package com.faceanalysis.faceAnalysis;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -7,24 +8,40 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 @Service
 public class FileSystemStorageService implements StorageService {
 
-    private final Path rootLocation;
+    private Path rootLocation;
+    private final StorageProperties prop;
 
     @Autowired
     public FileSystemStorageService(StorageProperties properties) {
         this.rootLocation = Paths.get(properties.getLocation());
+        this.prop = properties;
+    }
+
+    @Override
+    public void changeRootLocation(String location){
+        if(location.equals("admin-upload-dir")){
+            this.rootLocation = Paths.get(prop.getAdminLocation());
+        }
+        if(location.equals("upload-dir")){
+            this.rootLocation = Paths.get(prop.getLocation());
+        }
     }
 
     @Override
@@ -90,12 +107,32 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        init();
+
+    }
+
+    @Override
+    public String deleteOne(String filename) {
+        try {
+            FileSystemUtils.deleteRecursively(load(filename));
+            return "Success";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Deletion of " + filename + " failed.";
+        }
     }
 
     @Override
     public void init() {
         try {
-            Files.createDirectories(rootLocation);
+            if(!Files.exists(rootLocation)) {
+                Files.createDirectory(rootLocation);
+            }
+            changeRootLocation("admin-upload-dir");
+            if(!Files.exists(rootLocation)) {
+                Files.createDirectory(rootLocation);
+            }
+            changeRootLocation("upload-dir");
         }
         catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);

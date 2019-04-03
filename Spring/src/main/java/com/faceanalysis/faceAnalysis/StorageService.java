@@ -14,10 +14,14 @@ public interface StorageService {
 
     Stream<Path> loadAll();
 
+    void changeRootLocation(String location);
+
     Path load(String filename);
 
     Resource loadAsResource(String filename);
 
     void deleteAll();
+
+    String deleteOne(String filename);
 
 }
