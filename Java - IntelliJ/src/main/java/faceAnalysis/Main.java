@@ -35,6 +35,14 @@ public class Main {
         RequestHandler rh = new RequestHandler();
 		Controller controller = new Controller(rh);
 
+        ObjectMapper om = new ObjectMapper();
+        om.disable(MapperFeature.AUTO_DETECT_CREATORS,
+                MapperFeature.AUTO_DETECT_FIELDS,
+                MapperFeature.AUTO_DETECT_GETTERS,
+                MapperFeature.AUTO_DETECT_IS_GETTERS);
+        // if you want to prevent an exception when classes have no annotated properties
+        om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
         if (args.length == 2) {
             // amennyiben az eredeti json kell
             if(args[1].equals("original")) {
@@ -65,13 +73,7 @@ public class Main {
                 }
                 json += "]";
                 //System.out.println(json);
-                ObjectMapper om = new ObjectMapper();
-                om.disable(MapperFeature.AUTO_DETECT_CREATORS,
-                        MapperFeature.AUTO_DETECT_FIELDS,
-                        MapperFeature.AUTO_DETECT_GETTERS,
-                        MapperFeature.AUTO_DETECT_IS_GETTERS);
-                // if you want to prevent an exception when classes have no annotated properties
-                om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
 
 
                 String jsonTry = om.writeValueAsString(customList);
@@ -119,7 +121,9 @@ public class Main {
                             String json = rh.sendVerifyRequest(file1Id, file2Id);
                             VerifyResult result = rh.getVerifyResultFromJson(json);
                             CustomVerifyResult customVerifyResult = new CustomVerifyResult(result);
-                            System.out.println(customVerifyResult.toString());
+
+                            String jsonTry = om.writeValueAsString(customVerifyResult);
+                            System.out.println(jsonTry);
                         }
                     } else {
                         System.out.println("A jobb oldali képen nem található felismerhető arc.");
