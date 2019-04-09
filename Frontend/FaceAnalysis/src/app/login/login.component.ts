@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
 
     formData.append('file', imageFile, imageFile.name);
 
-    this.mainService.uploadImage(formData).subscribe(response => {
+    this.mainService.uploadAdminImage(formData).subscribe(response => {
       console.log(response);
       this.runFaceComparison();
     });
@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
 
   onSuccessfulLogin() {
     var link = document.getElementById("link");
-    link.textContent = "https://www.aut.bme.hu/";
+    link.textContent = localStorage.getItem("loginLink");
   }
 
   onLoginFailed() {

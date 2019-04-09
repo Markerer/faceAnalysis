@@ -23,6 +23,12 @@ public class FaceAnalysisApplication {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/*").allowedOrigins("*").allowedMethods("*");
 
+				registry.addMapping("/admin/*").allowedOrigins("*").allowedMethods("*");
+
+				registry.addMapping("/files/admin/*").allowedOrigins("*").allowedMethods("*");
+
+				registry.addMapping("/files/*").allowedOrigins("*").allowedMethods("*");
+
 			}
 		};
 	}

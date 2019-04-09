@@ -12,16 +12,58 @@ export class MainService {
   constructor(private http: HttpClient) { }
 
 
-  public uploadImage(uploadData: FormData): Observable<Object> {
+  public uploadAdminImage(uploadData: FormData): Observable<Object> {
       return this.http.post(AppSettings.API_ROOT + '/admin', uploadData, {
       responseType: 'text'
      });
   }
 
+  public deleteAdminImage(filename: string): Observable<Object> {
+    return this.http.delete(AppSettings.API_ROOT + 'files/admin?filename=' + filename, {
+      responseType: 'text'
+    });
+  }
+
+  public deleteAllAdminImages(): Observable<Object> {
+    return this.http.delete(AppSettings.API_ROOT + 'files/admin/all', {
+      responseType: 'text'
+    });
+  }
+
+
+  public uploadImage(uploadData: FormData): Observable<Object> {
+    return this.http.post(AppSettings.API_ROOT, uploadData, {
+      responseType: 'text'
+    });
+  }
+
+  public deleteImage(filename: string): Observable<Object> {
+    return this.http.delete(AppSettings.API_ROOT + 'files?filename=' + filename, {
+      responseType: 'text'
+    });
+  }
+
+  public deleteAllImages(): Observable<Object> {
+    return this.http.delete(AppSettings.API_ROOT + 'files/all', {
+      responseType: 'text'
+    });
+  }
 
   public getImage(filepath: string): Observable<Blob> {
     return this.http.get(filepath, {
       responseType: 'blob'
+    });
+  }
+
+  public getAllImages(): Observable<string[]> {
+    return this.http.get<string[]>(AppSettings.API_ROOT + 'files/', {
+      responseType: 'json'
+    });
+  }
+
+  public getAllAdminImages(): Observable<string[]> {
+    return this.http.get<string[]>(AppSettings.API_ROOT + 'files/admin/', {
+      responseType: 'json'
     });
   }
 

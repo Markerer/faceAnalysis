@@ -74,7 +74,7 @@ export class FaceAnalysisComponent implements OnInit {
 
   changeAnalyisMessage(){
       var div = document.getElementById("link");
-      div.innerText = "Kaki";
+      div.innerText = "Helloka";
     }
 
   public changeSuccessMessage(): void {

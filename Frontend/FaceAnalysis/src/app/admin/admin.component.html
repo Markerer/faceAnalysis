@@ -1,6 +1,65 @@
 <!DOCTYPE html>
 <html>
 <body class="bod">
+  <div style="text-align:center;">
+
+    <div style="margin-top:100px">
+      <form [formGroup]="updateLoginLinkForm"
+            (ngSubmit)="updateLoginLink(
+              updateLoginLinkForm.get('loginLink').value)"
+            class="form" method="" action=""
+            [class.error]="!updateLoginLinkForm.valid && updateLoginLinkForm.touched">
+        <div>
+          <input type="text"
+                 id="loginLink"
+                 value="{{loginLinkString}}"
+                 class="form-control"
+                 [(ngModel)]="loginLink"
+                 placeholder="Belépési link frissítése"
+                 [formControl]="updateLoginLinkForm.get('loginLink')" />
+        </div>
+
+        <div *ngIf="successLinkUpdateMessage" type="success" class="alert alert-success" (close)="successLinkUpdateMessage = null">
+          {{ successLinkUpdateMessage }}
+        </div>
+
+        <button style="margin-top:20px;" type="submit" class="btn btn-primary btn-lg btn-block">Link frissítése</button>
+      </form>
+    </div>
+
+      <div *ngIf="successMessage" type="success" class="alert alert-success" (close)="successMessage = null">
+        {{ successMessage }}
+      </div>
+
+      <div class="bod">
+        <input type="file"
+               (change)="onFileChanged($event)"
+               accept="image/*">
+      </div>
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary btn-lg"
+                (click)="uploadImage()">
+          Kép feltöltése
+        </button>
+      </div>
+
+  </div>
+  <div class="container d-flex bod">
+    <div class="row">
+      <div class="col-lg-4" *ngFor="let myimage of faceImages;">
+        <div class="card">
+          <img class="card-img-top" src="{{myimage.link}}">
+          <!--d-flex kell, mert akkor lesz flexbox, aztán a justify horizontálisan középre, align pedig vertikálisan-->
+          <div class="card-body align-items-center d-flex justify-content-center">
+            <div class="text-center">
+              <a class="btn btn-primary btn-lg center middlebtn" style="background-color:#1367AF; color:white;" (click)="deleteAdminImage(myimage.id)">Kép törlése</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 </body>
 </html>

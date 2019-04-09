@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 
@@ -34,6 +34,7 @@ import { CameraComponent } from './camera/camera.component';
     FormsModule,
     RouterModule,
     BrowserModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     WebcamModule,
     HttpClientModule
