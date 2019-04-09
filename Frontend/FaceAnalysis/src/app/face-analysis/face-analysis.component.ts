@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MainService } from '../main.service';
 
 import { WebcamImage } from 'ngx-webcam';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -14,7 +16,15 @@ class ImageSnippet {
 })
 export class FaceAnalysisComponent implements OnInit {
 
+  lastFileName: string;
+  private _success = new Subject<string>();
+  successMessage: string;
+
   ngOnInit() {
+    this._success.subscribe((message) => this.successMessage = message);
+    this._success.pipe(
+      debounceTime(5000)
+    ).subscribe(() => this.successMessage = null);
   }
 
 
@@ -30,6 +40,57 @@ export class FaceAnalysisComponent implements OnInit {
 
   selectedFile: ImageSnippet;
 
+  uploadImage() {
+    const formData = new FormData();
+
+    var base64 = this.webcamImage.imageAsBase64;
+    const date = new Date().valueOf();
+
+    // Replace extension according to your media type
+    const imageName = date + '.jpg';
+    this.lastFileName = imageName;
+    // call method that creates a blob from dataUri
+    const imageBlob = this.dataURItoBlob(base64);
+    const imageFile = new File([imageBlob], imageName, { type: 'image/jpg' });
+
+    formData.append('file', imageFile, imageFile.name);
+
+    this.mainService.uploadImage(formData).subscribe(response => {
+      console.log(response);
+      this.runFaceAnalysis();
+    });
+  }
+
+  runFaceAnalysis() {
+
+    this.changeSuccessMessage();
+    this.mainService.getFaceAnalysis(this.lastFileName).subscribe(
+      response => {
+        console.log(response);
+        this.changeAnalyisMessage();
+      }
+    );
+  }
+
+  changeAnalyisMessage(){
+      var div = document.getElementById("link");
+      div.innerText = "Kaki";
+    }
+
+  public changeSuccessMessage(): void {
+    this._success.next(`Dolgozunk a kérésen...`);
+  }
+
+  dataURItoBlob(dataURI) {
+    const byteString = window.atob(dataURI);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const int8Array = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < byteString.length; i++) {
+      int8Array[i] = byteString.charCodeAt(i);
+    }
+    const blob = new Blob([int8Array], { type: 'image/jpg' });
+    return blob;
+  }
 
   processFile(imageInput: any) {
     const file: File = imageInput.files[0];
@@ -51,6 +112,12 @@ export class FaceAnalysisComponent implements OnInit {
     });
 
     reader.readAsDataURL(file);
+  }
+
+  onAnalyseButtonClicked(){
+    if (this.webcamImage != null) {
+      this.uploadImage();
+    }
   }
 
 }

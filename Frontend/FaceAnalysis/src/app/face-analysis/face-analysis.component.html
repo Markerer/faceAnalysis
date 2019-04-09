@@ -2,19 +2,13 @@
 <html>
 <body class="bod">
 
-    <label class="image-upload-container btn btn-bwm">
-      <span>Select Image</span>
-      <input #imageInput
-             type="file"
-             accept="image/*"
-             (change)="processFile(imageInput)">
-    </label>
-
     <div *ngIf="selectedFile" class="img-preview-container">
 
       <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
            [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
       </div>
+
+
 
       <div *ngIf="selectedFile.pending" class="img-loading-overlay">
         <div class="img-spinning-circle"></div>
@@ -30,6 +24,15 @@
     <div style="text-align:center" class="snapshot" *ngIf="webcamImage">
       <img class="resizableImage" [src]="webcamImage.imageAsDataUrl" />
     </div>
+
+    <button id="btn" type="button" class="btn btn-default" style="margin-top: 30px;" (click)="onAnalyseButtonClicked()">Analyse</button>
+
+    <div *ngIf="successMessage" type="success" class="alert alert-success" (close)="successMessage = null">
+      {{ successMessage }}
+
+    </div>
+
+    <div id="div"></div>
 
   </body>
   </html>
