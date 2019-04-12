@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AppSettings } from './appsettings';
 import { VerifyResult } from './model/VerifyResult';
+import { DetectedFace } from './model/DetectedFace';
 
 @Injectable({
   providedIn: 'root'
@@ -68,7 +69,9 @@ export class MainService {
   }
 
   public getFaceAnalysis(filename: string): Observable<Object[]> {
-    return this.http.get<Object[]>(AppSettings.API_ROOT + "analysis?filename=" + filename);
+    return this.http.get<Object[]>(AppSettings.API_ROOT + "analysis?filename=" + filename, {
+      responseType: 'json'
+    });
   }
 
   public getFaceComparison(filename: string): Observable<VerifyResult> {
