@@ -59,8 +59,8 @@ export class AdminComponent implements OnInit {
     this.removeItems();
   }
 
-  public changeSuccessUploadMsg(): void {
-    this._success.next(`Épp feltöltjük a képet, egy kis türelmet kérünk!`);
+  public changeSuccessUploadMsg(msg: string): void {
+    this._success.next(msg);
   }
 
   public changeSuccessLinkUpdateMsg(): void {
@@ -75,11 +75,12 @@ export class AdminComponent implements OnInit {
   // Kép feltöltése
   uploadImage() {
     if (!(this.selectedFile === null || this.selectedFile === undefined)) {
+      this.changeSuccessUploadMsg('Épp feltöltjük a képet...');
       const uploadData = new FormData();
       uploadData.append('file', this.selectedFile, this.selectedFile.name);
       this.mainService.uploadAdminImage(uploadData).subscribe(object => {
           console.log(object);
-        this.changeSuccessUploadMsg();
+        this.changeSuccessUploadMsg('A kép feltöltése sikeres!');
         this.getImages();
       });
     }
@@ -111,6 +112,11 @@ export class AdminComponent implements OnInit {
 
   updateLoginLink(loginLink: string) {
     if (loginLink != undefined || loginLink != null) {
+      if (!loginLink.includes('http')) {
+        var temp = 'https://';
+        temp += loginLink;
+        loginLink = temp;
+      }
       localStorage.setItem("loginLink", loginLink);
       this.changeSuccessLinkUpdateMsg();
     }

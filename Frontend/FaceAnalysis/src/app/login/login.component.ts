@@ -4,7 +4,7 @@ import { MainService } from '../main.service';
 import { VerifyResult } from '../model/VerifyResult';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit {
   private _alert = new Subject<string>();
   alertMessage: string;
 
+  latestImage = document.getElementById("latestImage");
 
   constructor(private mainService: MainService) { }
 
@@ -35,6 +36,13 @@ export class LoginComponent implements OnInit {
   handleImage(webcamImage: WebcamImage) {
     this.webcamImage = webcamImage;
   }
+
+  handleCameraOpened() {
+    this.webcamImage = null;
+    this.lastVerifyResult.Image = null;
+    
+  }
+
 
   uploadImage() {
     const formData = new FormData();
@@ -71,8 +79,9 @@ export class LoginComponent implements OnInit {
 
 
   onSuccessfulLogin() {
-    var link = document.getElementById("link");
+    var link = document.getElementById('link');
     link.textContent = localStorage.getItem("loginLink");
+    $('#link').attr('href', localStorage.getItem("loginLink"));
   }
 
   onLoginFailed() {
@@ -93,9 +102,10 @@ export class LoginComponent implements OnInit {
     this.mainService.getFaceComparison(this.lastFileName).subscribe(
       response => {
         console.log(response);
-        this.lastVerifyResult = response;
-        if (this.lastVerifyResult.IsIdentical === 'Igen') {
+        
+        if (response.Confidence > 0.51) {
           this.onSuccessfulLogin();
+          this.lastVerifyResult = response;
         } else {
           this.onLoginFailed();
         }
@@ -105,8 +115,17 @@ export class LoginComponent implements OnInit {
 
   onLoginButtonClicked(): void {
     if (this.webcamImage != null) {
-      this.uploadImage();
       this.changeSuccessUploadMsg();
+      this.uploadImage();
+      // kép eltüntetése
+      this.lastVerifyResult.Image = null;
+    }
+  }
+
+  onNavigate() {
+    var textInTheLink = document.getElementById('link').textContent;
+    if (textInTheLink === localStorage.getItem("loginLink")) {
+      window.open(localStorage.getItem("loginLink"), "_blank");
     }
   }
 
@@ -115,7 +134,7 @@ export class LoginComponent implements OnInit {
     //A sikeres üzenet
     this._success.subscribe((message) => this.successMessage = message);
     this._success.pipe(
-      debounceTime(5000)
+      debounceTime(10000)
     ).subscribe(() => this.successMessage = null);
 
     //A sikeres üzenet
@@ -126,7 +145,7 @@ export class LoginComponent implements OnInit {
 
     this._alert.subscribe((message) => this.alertMessage = message);
     this._alert.pipe(
-      debounceTime(5000)
+      debounceTime(7000)
     ).subscribe(() => this.alertMessage = null);
   }
 

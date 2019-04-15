@@ -12,6 +12,9 @@ export class CameraComponent implements OnInit {
   @Output()
   public pictureTaken = new EventEmitter<WebcamImage>();
 
+  @Output()
+  public cameraOpened = new EventEmitter<void>();
+
   // toggle webcam on/off
   public showWebcam = false;
   public allowCameraSwitch = true;
@@ -50,6 +53,9 @@ export class CameraComponent implements OnInit {
   }
 
   public toggleWebcam(): void {
+    if (!this.showWebcam) {
+      this.cameraOpened.emit();
+    }
     this.showWebcam = !this.showWebcam;
   }
 

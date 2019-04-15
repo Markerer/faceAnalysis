@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <body class="bod">
-  <app-camera (pictureTaken)="handleImage($event)"></app-camera>
+  <app-camera (pictureTaken)="handleImage($event)" (cameraOpened)="handleCameraOpened($event)" ></app-camera>
 
   <div (window:resize)="onResize($event)" style="text-align:center" class="snapshot" *ngIf="webcamImage">
-    <img [src]="webcamImage.imageAsDataUrl" />
+    <img src="{{webcamImage.imageAsDataUrl}}" id="latestImage"/>
   </div>
   <br>
   <div class="centerAligned">
@@ -24,7 +24,7 @@
       {{ alertMessage }}
     </div>
     <button id="btn" type="button" class="btn btn-default" style="margin-top: 30px;" (click)="onLoginButtonClicked()">Login</button>
-    <div> <h1 id="link"></h1></div>
+    <div style="margin-top:30px;"> <h1 id="link" style="cursor:pointer;" (click)="onNavigate()"></h1></div>
   </div>
 </body>
 </html>
