@@ -12,6 +12,7 @@ export  class DetectedFace {
   Hair: Hair;
   Makeup: Makeup;
   Occlusion: Occlusion;
+  Age: number;
   Gender: string;
   Smile: string;
   Glasses: string;
@@ -50,6 +51,7 @@ export  class DetectedFace {
     ret += this.Hair.toString();
     ret += this.Makeup.toString();
     ret += this.Occlusion.toString();
+    ret += "Kor: " + this.Age + '\n';
     ret += "Nem: " + this.Gender + '\n';
     ret += "Mosoly: " + this.Smile + '\n';
     ret += "Szemüveg: " + this.Glasses;

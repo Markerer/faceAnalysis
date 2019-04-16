@@ -42,6 +42,8 @@ public class CustomDetectedFace {
 	@JsonProperty("Occlusion")
 	private CustomOcclusion customOcclusion;
 
+	@JsonProperty("Age")
+	int Age;
 
 	@JsonProperty("Gender")
 	String Gender;
@@ -72,6 +74,9 @@ public class CustomDetectedFace {
 	}
 
 	public void setValues(){
+
+		Age = detectedFace.faceAttributes().age().intValue();
+
 		String gender = detectedFace.faceAttributes().gender().name();
 		if(gender.equals("FEMALE")){
 			Gender = "Nő";

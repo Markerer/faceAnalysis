@@ -103,7 +103,8 @@ public class AnalysisRequestController {
 
                         if (!compareTo.equals(filename)) {
                             String json = BasicMethods.RunAdminFaceComparison(filename, compareTo, true);
-                            if (!json.equals("") && json.contains("{")) {
+
+                            if (json.contains("{")) {
                                 responses.add(json);
                                 fileLocations.add(file);
                             }
@@ -116,12 +117,14 @@ public class AnalysisRequestController {
 
                 for (int i = 0; i < responses.size(); i++) {
                     String result = responses.get(i);
+                    String fileLocation = fileLocations.get(i);
+
                     JSONObject jsonObject = new JSONObject(result);
 
                     double temp = (double) jsonObject.get("Confidence");
                     if (temp > confidence) {
                         confidence = temp;
-                        pathToMostSimilarImage = fileLocations.get(i);
+                        pathToMostSimilarImage = fileLocation;
                         mostSimilarJsonObject = jsonObject;
                     }
                 }
