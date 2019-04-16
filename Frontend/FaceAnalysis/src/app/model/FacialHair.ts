@@ -3,8 +3,13 @@ export class FacialHair {
   Beard: string;
   Sideburns: string;
 
+  constructor(fh: FacialHair) {
+    this.Moustache = fh.Moustache;
+    this.Beard = fh.Beard;
+    this.Sideburns = fh.Sideburns;
+  }
 
-  toString(): string {
+  public toString(): string {
     var ret = "";
 
     ret += "Bajusz: " + this.Moustache + '\n';

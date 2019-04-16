@@ -5,6 +5,7 @@ import { WebcamImage } from 'ngx-webcam';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { DetectedFace } from '../model/DetectedFace';
+import { DepFlags } from '@angular/core/src/view';
 
 class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -67,12 +68,18 @@ export class FaceAnalysisComponent implements OnInit {
     this.changeSuccessMessage();
     this.mainService.getFaceAnalysis(this.lastFileName).subscribe(
       response => {
+        console.log("response:");
+        console.log(response['0']);
+        var str = "";
         console.log(response.toString());
-        for (let df in response['0']) {
-          console.log(df.toString());
-         
-          this.changeAnalyisMessage(df.toString());
+        for (var df of response) {
+          console.log(df);
+          str += "\n" + (response.indexOf(df)+1)  + ". arc\n\n";
+          str += df.toString();
+          str += "\n";
+
         }
+        this.changeAnalyisMessage(str);
       }
     );
   }

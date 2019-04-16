@@ -4,7 +4,7 @@ import { Hair } from './Hair';
 import { Makeup } from './Makeup';
 import { Occlusion } from './Occlusion';
 
-export class DetectedFace {
+export  class DetectedFace {
 
   Accessories: string[];
   Emotions: Emotion[];
@@ -17,16 +17,31 @@ export class DetectedFace {
   Glasses: string;
   FaceRectangle: number[];
 
+  constructor(face: DetectedFace){
+    this.Accessories = face.Accessories;
+    this.Emotions = [];
+    for (let em of face.Emotions){
+      this.Emotions.push(new Emotion(em));
+    }
+    this.FacialHair = new FacialHair(face.FacialHair);
+    this.Hair = new Hair(face.Hair);
+    this.Makeup = new Makeup(face.Makeup);
+    this.Occlusion = new Occlusion(face.Occlusion);
+    this.Gender = face.Gender;
+    this.Smile = face.Smile;
+    this.Glasses = face.Glasses;
+    this.FaceRectangle = face.FaceRectangle;
+  }
 
-  toString(): string{
+  public toString(): string{
     var ret = "";
     if (this.Accessories.length > 0) {
-      for(let a in this.Accessories) {
+      for(let a of this.Accessories) {
         ret += a + '\n';
       }
     }
     if (this.Emotions.length > 0) {
-      for (let e in this.Emotions) {
+      for (let e of this.Emotions) {
         ret += e.toString();
       }
     }

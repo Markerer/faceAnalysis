@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
   handleCameraOpened() {
     this.webcamImage = null;
     this.lastVerifyResult.Image = null;
-    
+
   }
 
 
@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
 
     var base64 = this.webcamImage.imageAsBase64;
     const date = new Date().valueOf();
-  
+
     // Replace extension according to your media type
     const imageName = date + '.jpg';
     this.lastFileName = imageName;
@@ -102,7 +102,7 @@ export class LoginComponent implements OnInit {
     this.mainService.getFaceComparison(this.lastFileName).subscribe(
       response => {
         console.log(response);
-        
+
         if (response.Confidence > 0.51) {
           this.onSuccessfulLogin();
           this.lastVerifyResult = response;

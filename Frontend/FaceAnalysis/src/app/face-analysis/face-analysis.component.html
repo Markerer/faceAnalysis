@@ -25,14 +25,15 @@
       <img class="resizableImage" [src]="webcamImage.imageAsDataUrl" />
     </div>
 
-    <button id="btn" class="btn btn-default" style="margin-top: 30px;" (click)="onAnalyseButtonClicked()">Analyse</button>
-
+    <div style="text-align:center" class="snapshot" *ngIf="webcamImage">
+      <button id="btn" class="btn btn-default" style="margin-top: 30px;" (click)="onAnalyseButtonClicked()">Analyse</button>
+    </div>
     <div *ngIf="successMessage" type="success" class="alert alert-success" (close)="successMessage = null">
       {{ successMessage }}
 
     </div>
 
-    <div id="div"></div>
+    <div id="div" style="white-space: pre-line"></div>
 
   </body>
   </html>

@@ -28,6 +28,28 @@ public class BasicMethods {
         return RunFaceAnalysisApplicationAndReturnOutput(proc);
     }
 
+    public static String RunAdminFaceAnalysis(String filename, boolean processedResponse) {
+        // Run a java app in a separate system process
+        Process proc = null;
+        try {
+            String cmd = "java -jar faceAnalysis.jar ";
+            if (filename.contains("http")) {
+                cmd += filename;
+            } else {
+                cmd += "admin-upload-dir/" + filename;
+            }
+            if(processedResponse){
+                cmd += " processed";
+            } else {
+                cmd += " original";
+            }
+            proc = Runtime.getRuntime().exec(cmd);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return RunFaceAnalysisApplicationAndReturnOutput(proc);
+    }
+
 
     public static String RunFaceComparison(String filename1, String filename2, boolean processedResponse) {
         // Run a java app in a separate system process

@@ -4,6 +4,9 @@ import { HttpClient } from '@angular/common/http';
 import { AppSettings } from './appsettings';
 import { VerifyResult } from './model/VerifyResult';
 import { DetectedFace } from './model/DetectedFace';
+import { map } from 'rxjs/operators';
+import { jsonpCallbackContext, HttpClientJsonpModule } from '@angular/common/http/src/module';
+import { resolveComponentResources } from '@angular/core/src/metadata/resource_loading';
 
 @Injectable({
   providedIn: 'root'
@@ -68,10 +71,16 @@ export class MainService {
     });
   }
 
-  public getFaceAnalysis(filename: string): Observable<Object[]> {
-    return this.http.get<Object[]>(AppSettings.API_ROOT + "analysis?filename=" + filename, {
+  public getFaceAnalysis(filename: string): Observable<DetectedFace[]> {
+    return this.http.get<DetectedFace[]>(AppSettings.API_ROOT + "analysis?filename=" + filename, {
       responseType: 'json'
-    });
+    }).pipe( map( response => {
+      var dfa = [];
+      for (let df of response){
+        dfa.push(new DetectedFace(df));
+      }
+      return dfa;
+    }));
   }
 
   public getFaceComparison(filename: string): Observable<VerifyResult> {

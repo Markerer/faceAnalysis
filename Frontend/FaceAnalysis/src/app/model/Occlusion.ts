@@ -3,8 +3,13 @@ export class Occlusion {
   EyeOccluded: string;
   MouthOccluded: string;
 
+  constructor(occ: Occlusion){
+    this.ForeheadOccluded = occ.ForeheadOccluded;
+    this.EyeOccluded = occ.EyeOccluded;
+    this.MouthOccluded = occ.MouthOccluded;
+  }
 
-  toString(): string {
+  public toString(): string {
     var ret = "";
 
     ret += "Homlok eltakarva: " + this.ForeheadOccluded + '\n';

@@ -85,7 +85,8 @@ public class AnalysisRequestController {
 
         if (file1.exists()) {
 
-            String faces = BasicMethods.RunFaceAnalysis(filename, true);
+            String faces = BasicMethods.RunAdminFaceAnalysis(filename, true);
+            System.out.println("LOG faces: " + faces );
             if(faces.contains("{")) {
 
                 List<String> locations = new ArrayList<>(storageService.loadAll().map(
