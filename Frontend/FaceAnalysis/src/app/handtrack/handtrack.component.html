@@ -1,21 +1,13 @@
-
-<body class="bx--body p20">
-  <!-- <img id="img" src="hand.jpg"/>  -->
-  <div class="p20">
-    Handtrack.js allows you prototype handtracking interactions in the browser in 3 lines of code.
-  </div>
+<br>
   <div class="mb10">
-    <button  id="trackbutton" class="bx--btn bx--btn--secondary" type="button" disabled>
+      <div id="updatenote" class="updatenote mt10"> loading model ..</div>
+      <br><br>
+    <button  id="trackbutton" class="btn btn-default" type="button" disabled (click)="toggleVideo()">
       Toggle Video
     </button>
-    <button id="nextimagebutton" class="mt10 bx--btn bx--btn--secondary" type="button" disabled>
-      Next Image
-    </button>
-    <div id="updatenote" class="updatenote mt10"> loading model ..</div>
   </div>
   <video class="videobox canvasbox" autoplay="autoplay" id="myvideo"></video>
   <canvas id="canvas" class="border canvasbox"></canvas>
 
   <script src="https://unpkg.com/carbon-components@latest/scripts/carbon-components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handtrackjs@latest/dist/handtrack.min.js"> </script>
-
