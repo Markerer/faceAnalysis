@@ -81,22 +81,14 @@ public class BasicMethods {
     }
 
 
-    public static String RunAdminFaceComparison(String filename1, String filename2, boolean processedResponse) {
+    public static String RunAdminFaceComparison(String id1, String id2, boolean processedResponse) {
         // Run a java app in a separate system process
         Process proc = null;
         try {
             String cmd = "java -jar faceAnalysis.jar ";
-            if(filename1.contains("http")){
-                cmd += filename1;
-            } else {
-                cmd += "admin-upload-dir/" + filename1;
-            }
-            cmd += " ";
-            if(filename2.contains("http")){
-                cmd += filename2;
-            } else {
-                cmd += "admin-upload-dir/" + filename2;
-            }
+
+            cmd += id1 + " " + id2;
+
             if(processedResponse){
                 cmd += " processed";
             } else {

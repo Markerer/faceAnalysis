@@ -6,7 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.faceanalysis.faceAnalysis.database.Admin;
+import com.faceanalysis.faceAnalysis.database.AdminService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -25,11 +30,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class FileUploadController {
 
     private final StorageService storageService;
+    private final AdminService adminService;
     private String lastFace;
 
     @Autowired
-    public FileUploadController(StorageService storageService) {
+    public FileUploadController(StorageService storageService, AdminService adminService) {
         this.storageService = storageService;
+        this.adminService = adminService;
     }
 
     @GetMapping("/")
@@ -108,16 +115,32 @@ public class FileUploadController {
 //---------------------------------------------------------------admin things-----------------------------------------------------------------------
 
     @RequestMapping(value = "/admin", method = POST, produces = "plain/text")
-    public ResponseEntity<String> handleAdminUpload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> handleAdminUpload(@RequestParam("file") MultipartFile file) throws JSONException {
         String contentType = file.getContentType();
         String type = contentType.split("/")[0];
         if(type.equals("image")) {
             storageService.changeRootLocation("admin-upload-dir");
             storageService.store(file);
+            // amennyiben felülírnánk egy már meglévő fájlt (azonos nevűt töltöttünk fel),
+            // akkor kitöröljük az adatbázisból is (amennyiben nem volt ilyen, akkor semmi sem történik)
+            adminService.deleteByFilename(file.getOriginalFilename());
 
-            lastFace = BasicMethods.RunFaceAnalysis(file.getOriginalFilename(), false);  //elmentem egy tagváltozóba
-
-            return ResponseEntity.ok("You successfully uploaded " + file.getOriginalFilename() + "!");
+            lastFace = BasicMethods.RunAdminFaceAnalysis(file.getOriginalFilename(), false);
+            // amennyiben volt felismert arc a képen
+            if(lastFace.contains("{")){
+                // a válasz viszont minden esetben tömb, ezért kell így feldolgozni
+                JSONArray jsonArray = new JSONArray(lastFace);
+                // a legkönnyebben (azaz az első) felismerhető arcot vesszük figyelembe
+                JSONObject jsonObject = (JSONObject) jsonArray.get(0);
+                String faceId = (String) jsonObject.get("faceId");
+                Admin temp = new Admin(file.getOriginalFilename(), faceId);
+                // adatbázisba elmentés
+                adminService.saveOrUpdate(temp);
+                return ResponseEntity.ok("You successfully uploaded " + file.getOriginalFilename() + "!");
+            } else {
+                storageService.deleteOne(file.getOriginalFilename());
+                return ResponseEntity.badRequest().body("There was no faces on " + file.getOriginalFilename() + "!");
+            }
         } else {
             return ResponseEntity.badRequest().body("Invalid image file!");
         }
@@ -131,10 +154,6 @@ public class FileUploadController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "image/png");
         return new ResponseEntity<>(file, headers, HttpStatus.OK);
-
-
-        /*return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);*/
     }
 
     @RequestMapping(value = "/files/admin", method = GET, produces = "application/json")
@@ -156,7 +175,7 @@ public class FileUploadController {
     public ResponseEntity<String> deleteUploadedAdminFile(@RequestParam("filename") String filename){
         storageService.changeRootLocation("admin-upload-dir");
         String response = storageService.deleteOne(filename);
-
+        adminService.deleteByFilename(filename);
         return ResponseEntity.ok(response);
     }
 
@@ -164,6 +183,7 @@ public class FileUploadController {
     public ResponseEntity<String> deleteAllUploadedAdminFiles(){
         storageService.changeRootLocation("admin-upload-dir");
         storageService.deleteAll();
+        adminService.deleteAll();
         return ResponseEntity.ok("Success");
     }
 

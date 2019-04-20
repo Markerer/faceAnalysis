@@ -25,15 +25,15 @@ import java.util.List;
 public class Main {
 
 
-	public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws JsonProcessingException {
 
-		if (args.length == 0 || args.length > 3 ) {
+        if (args.length == 0 || args.length > 3) {
             UI ui = new UI();
             ui.go();
         }
 
         RequestHandler rh = new RequestHandler();
-		Controller controller = new Controller(rh);
+        Controller controller = new Controller(rh);
 
         ObjectMapper om = new ObjectMapper();
         om.disable(MapperFeature.AUTO_DETECT_CREATORS,
@@ -45,7 +45,7 @@ public class Main {
 
         if (args.length == 2) {
             // amennyiben az eredeti json kell
-            if(args[1].equals("original")) {
+            if (args[1].equals("original")) {
                 if (args[0].contains("http")) {
                     System.out.println(rh.buildAndSendHttpRequestFromURL(args[0]));
                 } else {
@@ -53,7 +53,7 @@ public class Main {
                 }
             }
             // amennyiben a feldolgozott
-            if(args[1].equals("processed")){
+            if (args[1].equals("processed")) {
                 List<DetectedFace> list;
                 if (args[0].contains("http")) {
                     list = controller.AnalysePictureURL(args[0]);
@@ -61,78 +61,75 @@ public class Main {
                     list = controller.AnalyseLocalPicture(new File(args[0]));
                 }
                 List<CustomDetectedFace> customList = new ArrayList<>();
-                String json = "[{";
-                for(DetectedFace df : list){
-                    CustomDetectedFace temp = new CustomDetectedFace(df);
-                    json += temp.toString();
-                    json += "}";
+                for (DetectedFace df : list) {
                     customList.add(new CustomDetectedFace(df));
-                    if(customList.size() < list.size()){
-                        json += ", ";
-                    }
                 }
-                json += "]";
-                //System.out.println(json);
-
-
 
                 String jsonTry = om.writeValueAsString(customList);
                 System.out.println(jsonTry);
             }
-        }
-        else if (args.length == 3) {
+        } else if (args.length == 3) {
             String file1Id = "";
             String file2Id = "";
 
-                if (args[0].contains("http")) {
-                    String json = rh.buildAndSendHttpRequestFromURL(args[0]);
-                    List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
-                    if(detectedFace.size() > 0) {
-                        file1Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
-                    }
-                } else {
-                    String json = rh.buildAndSendHttpRequestFromLocalContent(new File(args[0]));
-                    List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
-                    if(detectedFace.size() > 0) {
-                        file1Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
-                    }
+            if (args[0].contains("http")) {
+                String json = rh.buildAndSendHttpRequestFromURL(args[0]);
+                List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
+                if (detectedFace.size() > 0) {
+                    file1Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
                 }
-                if (args[1].contains("http")) {
-                    String json = rh.buildAndSendHttpRequestFromURL(args[1]);
-                    List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
-                    if(detectedFace.size() > 0) {
-                        file2Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
-                    }
-                } else {
-                    String json = rh.buildAndSendHttpRequestFromLocalContent(new File(args[1]));
-                    List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
-                    if(detectedFace.size() > 0) {
-                        file2Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
-                    }
+                // a reguláris kifejezés ellenőrzi, hogy a kiterjesztés megfelelő-e
+            } else if (args[0].matches("([^\\s]+(\\.(?i)(jpg|png|jpeg|bmp))$)")) {
+                String json = rh.buildAndSendHttpRequestFromLocalContent(new File(args[0]));
+                List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
+                if (detectedFace.size() > 0) {
+                    file1Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
                 }
-                if(!file1Id.equals("")) {
-                    if (!file2Id.equals("")) {
-                        // amennyiben az eredeti json kell
-                        if (args[2].equals("original")) {
-                            System.out.println(rh.sendVerifyRequest(file1Id, file2Id));
-                        }
-                        // amennyiben a feldolgozott
-                        if (args[2].equals("processed")) {
-                            String json = rh.sendVerifyRequest(file1Id, file2Id);
-                            VerifyResult result = rh.getVerifyResultFromJson(json);
-                            CustomVerifyResult customVerifyResult = new CustomVerifyResult(result);
+            }
+            // egyébként pedig már kész ID-ként dolgozzuk fel.
+            else {
+                file1Id = args[0];
+            }
+            if (args[1].contains("http")) {
+                String json = rh.buildAndSendHttpRequestFromURL(args[1]);
+                List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
+                if (detectedFace.size() > 0) {
+                    file2Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
+                }
+            } // a reguláris kifejezés ellenőrzi, hogy a kiterjesztés megfelelő-e
+            else if (args[1].matches("([^\\s]+(\\.(?i)(jpg|png|jpeg|bmp))$)")) {
+                String json = rh.buildAndSendHttpRequestFromLocalContent(new File(args[1]));
+                List<DetectedFace> detectedFace = rh.getDetectedFacesFromJson(json);
+                if (detectedFace.size() > 0) {
+                    file2Id = rh.getDetectedFacesFromJson(json).get(0).faceId().toString();
+                }
+            }
+            // egyébként pedig már kész ID-ként dolgozzuk fel.
+            else {
+                file2Id = args[1];
+            }
+            if (!file1Id.equals("")) {
+                if (!file2Id.equals("")) {
+                    // amennyiben az eredeti json kell
+                    if (args[2].equals("original")) {
+                        System.out.println(rh.sendVerifyRequest(file1Id, file2Id));
+                    }
+                    // amennyiben a feldolgozott
+                    if (args[2].equals("processed")) {
+                        String json = rh.sendVerifyRequest(file1Id, file2Id);
+                        VerifyResult result = rh.getVerifyResultFromJson(json);
+                        CustomVerifyResult customVerifyResult = new CustomVerifyResult(result);
 
-                            String jsonTry = om.writeValueAsString(customVerifyResult);
-                            System.out.println(jsonTry);
-                        }
-                    } else {
-                        System.out.println("A jobb oldali képen nem található felismerhető arc.");
+                        String jsonTry = om.writeValueAsString(customVerifyResult);
+                        System.out.println(jsonTry);
                     }
                 } else {
-                    System.out.println("A bal oldali képen nem található felismerhető arc.");
+                    System.out.println("A jobb oldali képen nem található felismerhető arc.");
                 }
-        }
-        else
+            } else {
+                System.out.println("A bal oldali képen nem található felismerhető arc.");
+            }
+        } else
             System.out.println("Valami probléma volt, írj a főnöknek.");
     }
 
