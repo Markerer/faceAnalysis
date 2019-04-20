@@ -28,6 +28,7 @@ export  class DetectedFace {
     this.Hair = new Hair(face.Hair);
     this.Makeup = new Makeup(face.Makeup);
     this.Occlusion = new Occlusion(face.Occlusion);
+    this.Age = face.Age;
     this.Gender = face.Gender;
     this.Smile = face.Smile;
     this.Glasses = face.Glasses;

@@ -30,7 +30,8 @@ export class FaceAnalysisComponent implements OnInit {
   }
 
 
-  constructor(private mainService: MainService) { }
+  constructor(private mainService: MainService) {}
+
 
   // latest snapshot
   public webcamImage: WebcamImage = null;
@@ -133,3 +134,4 @@ export class FaceAnalysisComponent implements OnInit {
   }
 
 }
+
