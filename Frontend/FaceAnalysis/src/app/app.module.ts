@@ -16,6 +16,7 @@ import { MainService } from './main.service';
 import { WebcamModule} from 'ngx-webcam';
 import { HttpClientModule } from '@angular/common/http';
 import { CameraComponent } from './camera/camera.component';
+import { HandtrackComponent } from './handtrack/handtrack.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { CameraComponent } from './camera/camera.component';
     NavbarComponent,
     FooterComponent,
     HomeComponent,
-    CameraComponent
+    CameraComponent,
+    HandtrackComponent
   ],
   imports: [
     NgbModule.forRoot(),

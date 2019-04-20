@@ -49,6 +49,10 @@ export class NavbarComponent implements OnInit {
     }
   };
 
+  navigateToHandtrack(): void {
+    this.router.navigate(['handtrack']);
+    this.sidebarClose();
+  }
 
   navigateToAdmin(): void {
     this.router.navigate(['admin']);

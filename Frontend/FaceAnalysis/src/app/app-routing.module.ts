@@ -6,11 +6,13 @@ import { AdminComponent } from './admin/admin.component';
 import { HomeComponent } from './home/home.component';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
+import { HandtrackComponent } from './handtrack/handtrack.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'faceanalysis', component: FaceAnalysisComponent },
   { path: 'admin', component: AdminComponent },
+  { path: 'handtrack', component: HandtrackComponent },
   { path: '', component: HomeComponent }
 ];
 
