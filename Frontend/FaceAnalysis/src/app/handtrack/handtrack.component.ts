@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import * as handTrack from 'handtrackjs';
-import { Injectable } from '@angular/core';
-
-@Injectable({
-  providedIn: 'root',
-})
 
 @Component({
   selector: 'app-handtrack',
@@ -20,10 +15,11 @@ export class HandtrackComponent implements OnInit {
   static trackButton =  <HTMLButtonElement> document.getElementById("trackbutton");
   static updateNote = <HTMLDivElement> document.getElementById("updatenote");
 
+
   static imgindex = 1;
   static isVideo = false;
   static model = null;
-  modelParams = {
+  static modelParams = {
     flipHorizontal: true,   // flip e.g for video
     maxNumBoxes: 20,        // maximum number of boxes to detect
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
@@ -44,12 +40,16 @@ export class HandtrackComponent implements OnInit {
     HandtrackComponent.updateNote = <HTMLDivElement> document.getElementById("updatenote");
     HandtrackComponent.context = HandtrackComponent.canvas.getContext("2d");
 
-    handTrack.load(this.modelParams).then(lmodel => {
+    handTrack.load(HandtrackComponent.modelParams).then(lmodel => {
       // detect objects in the image.
       HandtrackComponent.model = lmodel
       HandtrackComponent.updateNote.innerText = "Loaded Model!"
       HandtrackComponent.trackButton.disabled = false;
   });
+  }
+
+  flipVideo(){
+    HandtrackComponent.modelParams.flipHorizontal ? false : true ;
   }
 
   startVideo() {
@@ -69,6 +69,7 @@ static runDetection() {
 
   HandtrackComponent.model.detect(HandtrackComponent.video).then(predictions => {
       //console.log("Predictions: ", predictions);
+      HandtrackComponent.model.setModelParameters(HandtrackComponent.modelParams)
       HandtrackComponent.model.renderPredictions(predictions, HandtrackComponent.canvas, HandtrackComponent.context, HandtrackComponent.video);
       if (HandtrackComponent.isVideo) {
           requestAnimationFrame(HandtrackComponent.runDetection);

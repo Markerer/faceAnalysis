@@ -14,11 +14,17 @@ body {
   border-bottom: 3px solid #0063FF;
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
 background: #333;
+text-align: center;
 
 }
 
+.trackbutton {
+  text-align: center;
+}
+
 .mb10 {
-  margin-bottom: 10px
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .mt10 {
@@ -26,6 +32,7 @@ background: #333;
 }
 
 .updatenote {
+  text-align: center;
   padding: 10px;
   background: rgb(245, 147, 20);
   color: white;
