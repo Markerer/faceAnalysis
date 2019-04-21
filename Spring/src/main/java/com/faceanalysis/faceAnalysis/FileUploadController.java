@@ -1,13 +1,14 @@
 package com.faceanalysis.faceAnalysis;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.faceanalysis.faceAnalysis.database.Admin;
 import com.faceanalysis.faceAnalysis.database.AdminService;
+import com.faceanalysis.faceAnalysis.storage.StorageFileNotFoundException;
+import com.faceanalysis.faceAnalysis.storage.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
