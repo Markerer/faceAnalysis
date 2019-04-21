@@ -29,7 +29,7 @@
     <div style="text-align:center" class="snapshot" *ngIf="webcamImage">
         <button id="btn" class="btn btn-default" style="margin-top: 30px;" (click)="changeFace(false)">Previous Face</button>
       <button id="btn" class="btn btn-default" style="margin-top: 30px;" (click)="onAnalyseButtonClicked()">Analyse</button>
-      <button id="btn" class="btn btn-default" style="margin-top: 30px;" (click)="changeFace(true)">Next Face</button><br>
+      <button id="btn" class="btn btn-default" style="margin-top: 30px;" (click)="changeFace(true)">Next Face</button>
 
     <div *ngIf="successMessage" type="success" class="alert alert-success" (close)="successMessage = null">
       {{ successMessage }}
@@ -59,6 +59,7 @@
       </a>
     </div>
   -->
+  <br>
     <div id="div" style="white-space: pre-line"></div>
 
 
