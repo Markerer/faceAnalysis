@@ -102,21 +102,28 @@ export class FaceAnalysisComponent implements OnInit {
         }
         this.changeAnalyisMessage(str);
 
-        //this.resetPicture();
         this.actualFaceNumber=0;
         this.drawFace(0);
       }
     );
   }
 
-  async changeFace(){
+  async changeFace(b: boolean){
     await this.resetPicture();
+
+    console.log(this.actualFaceNumber);
+    if (b)
+    {
+      this.actualFaceNumber == this.faceNumber-1 ? this.actualFaceNumber = 0 : this.actualFaceNumber++;
+    }
+    else
+    {
+      this.actualFaceNumber == 0 ? this.actualFaceNumber = this.faceNumber-1 : this.actualFaceNumber--;
+    }
     this.drawFace(this.actualFaceNumber);
-    this.actualFaceNumber == this.faceNumber-1 ? this.actualFaceNumber = 0 : this.actualFaceNumber++;
   }
 
   resetPicture(){
-    //FaceAnalysisComponent.ctx.clearRect(0, 0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
     FaceAnalysisComponent.ctx.drawImage(this.img,0,0);
   }
 
