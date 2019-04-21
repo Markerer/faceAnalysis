@@ -5,7 +5,6 @@ import { WebcamImage } from 'ngx-webcam';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { DetectedFace } from '../model/DetectedFace';
-import { DepFlags } from '@angular/core/src/view';
 
 class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -29,15 +28,35 @@ export class FaceAnalysisComponent implements OnInit {
     ).subscribe(() => this.successMessage = null);
   }
 
+  ngAfterViewInit(){
+  }
+
 
   constructor(private mainService: MainService) {}
 
+
+  static lastResponse = {};
+
+  static ct  = <HTMLCanvasElement> document.getElementById("ct");
+  static ctx = null;
+
+  img= new Image();
+  faceNumber: number;
+  actualFaceNumber : number = 0;
 
   // latest snapshot
   public webcamImage: WebcamImage = null;
 
   handleImage(webcamImage: WebcamImage) {
     this.webcamImage = webcamImage;
+    FaceAnalysisComponent.ct  = <HTMLCanvasElement> document.getElementById("ct");
+    FaceAnalysisComponent.ctx = FaceAnalysisComponent.ct.getContext("2d");
+    var ez = this;
+    this.img.onload = function() {
+      FaceAnalysisComponent.ctx.drawImage(ez.img,0,0);
+    };
+    this.img.src=this.webcamImage.imageAsDataUrl;
+    this.resetPicture();
   }
 
 
@@ -55,7 +74,6 @@ export class FaceAnalysisComponent implements OnInit {
     // call method that creates a blob from dataUri
     const imageBlob = this.dataURItoBlob(base64);
     const imageFile = new File([imageBlob], imageName, { type: 'image/jpg' });
-
     formData.append('file', imageFile, imageFile.name);
 
     this.mainService.uploadImage(formData).subscribe(response => {
@@ -65,10 +83,12 @@ export class FaceAnalysisComponent implements OnInit {
   }
 
   runFaceAnalysis() {
-
+    var az = this;
     this.changeSuccessMessage();
     this.mainService.getFaceAnalysis(this.lastFileName).subscribe(
       response => {
+        FaceAnalysisComponent.lastResponse = response;
+        az.faceNumber = response.length;
         console.log("response:");
         console.log(response['0']);
         var str = "";
@@ -81,8 +101,29 @@ export class FaceAnalysisComponent implements OnInit {
 
         }
         this.changeAnalyisMessage(str);
+
+        //this.resetPicture();
+        this.actualFaceNumber=0;
+        this.drawFace(0);
       }
     );
+  }
+
+  async changeFace(){
+    await this.resetPicture();
+    this.drawFace(this.actualFaceNumber);
+    this.actualFaceNumber == this.faceNumber-1 ? this.actualFaceNumber = 0 : this.actualFaceNumber++;
+  }
+
+  resetPicture(){
+    //FaceAnalysisComponent.ctx.clearRect(0, 0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
+    FaceAnalysisComponent.ctx.drawImage(this.img,0,0);
+  }
+
+  drawFace(number){
+    let response = <DetectedFace[]> FaceAnalysisComponent.lastResponse;
+    FaceAnalysisComponent.ctx.strokeRect(response[number].FaceRectangle[0],response[number].FaceRectangle[1],
+      response[number].FaceRectangle[2],response[number].FaceRectangle[3]);
   }
 
   changeAnalyisMessage(msg: string){
@@ -103,28 +144,6 @@ export class FaceAnalysisComponent implements OnInit {
     }
     const blob = new Blob([int8Array], { type: 'image/jpg' });
     return blob;
-  }
-
-  processFile(imageInput: any) {
-    const file: File = imageInput.files[0];
-    const reader = new FileReader();
-
-    reader.addEventListener('load', (event: any) => {
-
-      this.selectedFile = new ImageSnippet(event.target.result, file);
-      const formData = new FormData();
-
-      formData.append('file', file, file.name);
-      this.mainService.uploadImage(formData).subscribe(
-        (res) => {
-          console.log(res);
-        },
-        (err) => {
-          console.log(err);
-        })
-    });
-
-    reader.readAsDataURL(file);
   }
 
   onAnalyseButtonClicked(){
