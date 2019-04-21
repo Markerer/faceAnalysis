@@ -1,4 +1,4 @@
-package com.faceanalysis.faceAnalysis;
+package com.faceanalysis.faceAnalysis.storage;
 
 public class StorageException extends RuntimeException {
 

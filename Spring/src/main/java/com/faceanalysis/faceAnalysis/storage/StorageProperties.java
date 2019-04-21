@@ -1,4 +1,4 @@
-package com.faceanalysis.faceAnalysis;
+package com.faceanalysis.faceAnalysis.storage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
