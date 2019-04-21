@@ -43,6 +43,7 @@ export class FaceAnalysisComponent implements OnInit {
   img= new Image();
   faceNumber: number;
   actualFaceNumber : number = 0;
+  analText = [];
 
   // latest snapshot
   public webcamImage: WebcamImage = null;
@@ -94,16 +95,16 @@ export class FaceAnalysisComponent implements OnInit {
         var str = "";
         console.log(response.toString());
         for (var df of response) {
-          console.log(df);
+          str="";
+          console.log(" indexof df : " + response.indexOf(df));
           str += "\n" + (response.indexOf(df)+1)  + ". arc\n\n";
           str += df.toString();
           str += "\n";
-
+          this.analText.push(str);
         }
-        this.changeAnalyisMessage(str);
-
         this.actualFaceNumber=0;
-        this.drawFace(0);
+        this.changeAnalyisMessage(this.actualFaceNumber);
+        this.drawFace(this.actualFaceNumber);
       }
     );
   }
@@ -120,6 +121,7 @@ export class FaceAnalysisComponent implements OnInit {
     {
       this.actualFaceNumber == 0 ? this.actualFaceNumber = this.faceNumber-1 : this.actualFaceNumber--;
     }
+    this.changeAnalyisMessage(this.actualFaceNumber);
     this.drawFace(this.actualFaceNumber);
   }
 
@@ -127,15 +129,15 @@ export class FaceAnalysisComponent implements OnInit {
     FaceAnalysisComponent.ctx.drawImage(this.img,0,0);
   }
 
-  drawFace(number){
+  drawFace(number: number){
     let response = <DetectedFace[]> FaceAnalysisComponent.lastResponse;
     FaceAnalysisComponent.ctx.strokeRect(response[number].FaceRectangle[0],response[number].FaceRectangle[1],
       response[number].FaceRectangle[2],response[number].FaceRectangle[3]);
   }
 
-  changeAnalyisMessage(msg: string){
+  changeAnalyisMessage(num: number){
     var div = document.getElementById("div");
-    div.textContent = msg;
+    div.textContent = this.analText[num];
     }
 
   public changeSuccessMessage(): void {
