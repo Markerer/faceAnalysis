@@ -74,10 +74,14 @@ public class FileUploadController {
             storageService.store(file);
 
             lastFace = BasicMethods.RunFaceAnalysis(file.getOriginalFilename(), false);  //elmentem egy tagváltozóba
-
-            return ResponseEntity.ok("You successfully uploaded " + file.getOriginalFilename() + "!");
+            if(lastFace.contains("{")){
+                return ResponseEntity.ok("Sikeresen feltöltötted a " + file.getOriginalFilename() + " képet!");
+            } else {
+                storageService.deleteOne(file.getOriginalFilename());
+                return ResponseEntity.badRequest().body("Nem volt felismerhető arc a képen!");
+            }
         } else {
-            return ResponseEntity.badRequest().body("Invalid image file!");
+            return ResponseEntity.badRequest().body("Érvénytelen fájlformátum!");
         }
     }
 
@@ -108,7 +112,7 @@ public class FileUploadController {
     public ResponseEntity<String> deleteAllUploadedFiles(){
         storageService.changeRootLocation("upload-dir");
         storageService.deleteAll();
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok("Siker");
     }
 
 
@@ -137,13 +141,13 @@ public class FileUploadController {
                 Admin temp = new Admin(file.getOriginalFilename(), faceId);
                 // adatbázisba elmentés
                 adminService.saveOrUpdate(temp);
-                return ResponseEntity.ok("You successfully uploaded " + file.getOriginalFilename() + "!");
+                return ResponseEntity.ok("Sikeresen feltöltötted a " + file.getOriginalFilename() + " képet!");
             } else {
                 storageService.deleteOne(file.getOriginalFilename());
-                return ResponseEntity.badRequest().body("There was no faces on " + file.getOriginalFilename() + "!");
+                return ResponseEntity.badRequest().body("Nem volt felismerhető arc a képen!");
             }
         } else {
-            return ResponseEntity.badRequest().body("Invalid image file!");
+            return ResponseEntity.badRequest().body("Érvénytelen fájlformátum!");
         }
     }
 
@@ -185,7 +189,7 @@ public class FileUploadController {
         storageService.changeRootLocation("admin-upload-dir");
         storageService.deleteAll();
         adminService.deleteAll();
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok("Siker");
     }
 
 

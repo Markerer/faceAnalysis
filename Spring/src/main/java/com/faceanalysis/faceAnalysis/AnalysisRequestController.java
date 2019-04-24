@@ -52,7 +52,7 @@ public class AnalysisRequestController {
             }
             return ResponseEntity.ok(json);
         } else {
-            return ResponseEntity.badRequest().body("The given file doesn't exist on our server.");
+            return ResponseEntity.badRequest().body("A megadott fájl nem létezik a szerverünkön!");
         }
     }
 
@@ -70,10 +70,10 @@ public class AnalysisRequestController {
                 String json = BasicMethods.RunFaceComparison(filename1, filename2, true);
                 return ResponseEntity.ok(json);
             } else {
-                return ResponseEntity.badRequest().body("The second given file doesn't exist on our server.");
+                return ResponseEntity.badRequest().body("A második fájl nem létezik a szerverünkön!");
             }
         } else {
-            return ResponseEntity.badRequest().body("The first given file doesn't exist on our server.");
+            return ResponseEntity.badRequest().body("Az első fájl nem létezik a szerverünkön!");
         }
     }
 
@@ -107,7 +107,6 @@ public class AnalysisRequestController {
                     }
                     String location = MvcUriComponentsBuilder.fromMethodCall(on(FileUploadController.class)
                             .serveAdminFile(a.filename)).build().toString();
-                    System.out.println(location);
                     Admin temp = new Admin(location, a.faceId);
                     admins.add(temp);
                 }
@@ -119,9 +118,7 @@ public class AnalysisRequestController {
                     executor.submit(() -> {
                         // az összehasonlítás lefuttatása a már megkapott faceId-kkel
                         if(!finalTryer.faceId.equals(admin.faceId)) {
-                            System.out.println("Comparing id: " + finalTryer.faceId + " TO: " + admin.faceId);
                             String verifyResult = BasicMethods.RunAdminFaceComparison(finalTryer.faceId, admin.faceId, true);
-                            System.out.println(verifyResult);
                             if (verifyResult.contains("{")) {
                                 responses.add(verifyResult);
                                 fileLocations.add(admin.filename);
@@ -155,7 +152,7 @@ public class AnalysisRequestController {
                 adminService.delete(tryer.id);
                 return ResponseEntity.ok(mostSimilarJsonObject.toString());
         } else {
-            return ResponseEntity.badRequest().body("The given file doesn't exist on our server.");
+            return ResponseEntity.badRequest().body("A megadott fájl nem létezik a szerverünkön!");
         }
     }
 
@@ -197,7 +194,6 @@ public class AnalysisRequestController {
             executor.submit(() -> {
                 // eredeti (nem a becsomagolt = feldolgozott) választ várjuk, hiszen abban benne van a faceId is
                 String json = BasicMethods.RunAdminFaceAnalysis(file, false);
-                System.out.println(json);
                 // ellenőrizzük, hogy található-e arc a válaszban, azaz a képen
                 // és csak akkor rakjuk az adatbázisba, ha igen.
                 if (json.contains("{")) {
@@ -217,11 +213,5 @@ public class AnalysisRequestController {
             });
         }
         awaitTerminationAfterShutdown(executor);
-        // csak ideiglenesen, logolásnak
-        List<Admin> admins = adminService.getAllAdmins();
-        for (Admin a : admins) {
-            System.out.println(a.filename + '\t' + a.faceId);
-        }
-        System.out.println(admins.size());
     }
 }
