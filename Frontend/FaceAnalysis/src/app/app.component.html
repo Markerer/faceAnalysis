@@ -1,2 +1,63 @@
 <app-navbar></app-navbar>
 <router-outlet></router-outlet>
+
+<!-- Central Modal Medium Danger-->
+<div class="modal fade" id="ModalDanger" tabindex="-1" role="dialog"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-danger" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header">
+        <p class="modal-title" style="font-size:x-large; font-weight:bold;">Hiba!</p>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+        <div class="text-center">
+          <p class="fa fa-times fa-4x" style="color:red; width:56px;"></p>
+          <p id="dangerModalText" style="font-size:large;"></p>
+        </div>
+      </div>
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <a type="button" class="btn btn-outline-danger waves-effect" data-dismiss="modal" style="margin:10px 0 10px 0; font-weight:bold;">Ok</a>
+      </div>
+    </div>
+    <!--/.Content-->
+  </div>
+</div>
+<!-- Central Modal Medium Danger-->
+<!-- Central Modal Medium Success -->
+<div class="modal fade" id="ModalSuccess" tabindex="-1" role="dialog"
+     aria-hidden="true">
+  <div class="modal-dialog modal-success" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header">
+        <p class="modal-title" id="successTitle" style="font-size:x-large; font-weight:bold;">Sikeres művelet</p>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+        <div class="text-center">
+          <p class="fa fa-check-circle fa-4x" style="color:green; width:56px;"></p>
+          <p id="successModalText" style="font-size:large;"></p>
+        </div>
+      </div>
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <a type="button" class="btn btn-outline-success waves-effect" data-dismiss="modal" style="margin:10px 0 10px 0; font-weight:bold;">Ok</a>
+      </div>
+    </div>
+    <!--/.Content-->
+  </div>
+</div>
+<!-- Central Modal Medium Success-->
+
+<button id="openDangerModalButton" [hidden]="true" data-toggle="modal" data-target="#ModalDanger">Open Modal</button>
+<button id="openSuccessModalButton" [hidden]="true" data-toggle="modal" data-target="#ModalSuccess">Open Modal</button>
+

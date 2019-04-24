@@ -5,6 +5,7 @@ import { WebcamImage } from 'ngx-webcam';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { DetectedFace } from '../model/DetectedFace';
+import { HttpErrorResponse } from '@angular/common/http';
 
 class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -63,6 +64,23 @@ export class FaceAnalysisComponent implements OnInit {
 
   selectedFile: ImageSnippet;
 
+  // Hiba esetén Modal dialog megnyitása
+  openDangerModal(msg: string) {
+    document.getElementById('dangerModalText').textContent = msg;
+    document.getElementById('openDangerModalButton').click();
+  }
+
+  // Sikeres Modal dialog megnyitása
+  openSuccessModal(msg: string) {
+    document.getElementById('successTitle').textContent = "Sikeres művelet!";
+    document.getElementById('successModalText').textContent = msg;
+    document.getElementById('openSuccessModalButton').click();
+    // valamiért sosem fut le a bezárás eventje a modalnak..., ezért kell ez
+    document.getElementById('successModalText').onclick = null;
+    document.getElementById('successModalText').style.cursor = "default";
+  }
+
+
   uploadImage() {
     const formData = new FormData();
 
@@ -80,6 +98,15 @@ export class FaceAnalysisComponent implements OnInit {
     this.mainService.uploadImage(formData).subscribe(response => {
       console.log(response);
       this.runFaceAnalysis();
+    }, error => {
+
+      var errorResponse = new HttpErrorResponse(error);
+      console.log(errorResponse.toString());
+      console.log(errorResponse.error);
+      if (errorResponse.status === 400) {
+        this.openDangerModal(`${errorResponse.error}`);
+      }
+
     });
   }
 

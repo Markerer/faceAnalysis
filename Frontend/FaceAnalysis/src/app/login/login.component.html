@@ -9,6 +9,7 @@
   <br>
   <div class="centerAligned">
     <div>
+      <p id="mostSimilarText" style="font-size:x-large; font-weight:bold; visibility:hidden;">A leghasonlóbb kép:</p>
       <img id="mostSimilarFace" src="{{lastVerifyResult.Image}}" />
     </div>
     <div *ngIf="successUpload" type="success" class="alert alert-success" (close)="successUpload = null">
@@ -20,9 +21,6 @@
 
     </div>
 
-    <div *ngIf="alertMessage" type="danger" class="alert alert-danger" (close)="alertMessage = null">
-      {{ alertMessage }}
-    </div>
     <button id="btn" type="button" class="btn btn-default" style="margin-top: 30px;" (click)="onLoginButtonClicked()">Login</button>
     <div style="margin-top:30px;"> <h1 id="link" style="cursor:pointer;" (click)="onNavigate()"></h1></div>
   </div>

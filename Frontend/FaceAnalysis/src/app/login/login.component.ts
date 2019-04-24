@@ -5,6 +5,7 @@ import { VerifyResult } from '../model/VerifyResult';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import * as $ from 'jquery';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -22,9 +23,6 @@ export class LoginComponent implements OnInit {
   private _success = new Subject<string>();
   private _successUpload = new Subject<string>();
 
-  private _alert = new Subject<string>();
-  alertMessage: string;
-
   latestImage = document.getElementById("latestImage");
 
   constructor(private mainService: MainService) { }
@@ -40,9 +38,24 @@ export class LoginComponent implements OnInit {
   handleCameraOpened() {
     this.webcamImage = null;
     this.lastVerifyResult.Image = null;
-
+    document.getElementById('mostSimilarText').style.visibility = "hidden";
   }
 
+  // Hiba esetén Modal dialog megnyitása
+  openDangerModal(msg: string) {
+    document.getElementById('dangerModalText').textContent = msg;
+    document.getElementById('openDangerModalButton').click();
+  }
+
+  // Sikeres Modal dialog megnyitása
+  openSuccessModal(msg: string) {
+    document.getElementById('successTitle').textContent = "Sikeres azonosítás!";
+    document.getElementById('successModalText').textContent = msg;
+    document.getElementById('successModalText').style.cursor = "pointer";
+    document.getElementById('successModalText').onclick = this.onNavigate;
+    document.getElementById('openSuccessModalButton').click();
+    
+  }
 
   uploadImage() {
     const formData = new FormData();
@@ -62,6 +75,15 @@ export class LoginComponent implements OnInit {
     this.mainService.uploadAdminImage(formData).subscribe(response => {
       console.log(response);
       this.runFaceComparison();
+    }, error => {
+
+      var errorResponse = new HttpErrorResponse(error);
+      console.log(errorResponse.toString());
+      console.log(errorResponse.error);
+      if (errorResponse.status === 400) {
+        this.openDangerModal(`${errorResponse.error}`);
+      }
+
     });
   }
 
@@ -77,23 +99,14 @@ export class LoginComponent implements OnInit {
   }
 
 
-
   onSuccessfulLogin() {
-    var link = document.getElementById('link');
-    link.textContent = localStorage.getItem("loginLink");
-    $('#link').attr('href', localStorage.getItem("loginLink"));
+    document.getElementById('mostSimilarText').style.visibility = "visible";
+    var linkURI = localStorage.getItem("loginLink");
+    this.openSuccessModal(linkURI);
   }
 
   onLoginFailed() {
-    var link = document.getElementById("link");
-    link.textContent = "Sikertelen azonosítás!";
-    this.changeAlertMessage("Sikertelen azonosítás!");
-  }
-
-  onUploadFailed() {
-    var link = document.getElementById("link");
-    link.textContent = "Sikertelen képfeltöltés!";
-    this.changeAlertMessage("Sikertelen képfeltöltés!");
+    this.openDangerModal("Sikertelen azonosítás!");
   }
 
   runFaceComparison() {
@@ -122,15 +135,17 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  onNavigate() {
-    var textInTheLink = document.getElementById('link').textContent;
+  onNavigate(event) {
+    console.log("katt on link");
+    var textInTheLink = document.getElementById('successModalText').textContent;
+    console.log(textInTheLink);
     if (textInTheLink === localStorage.getItem("loginLink")) {
       window.open(localStorage.getItem("loginLink"), "_blank");
     }
   }
 
   ngOnInit() {
-
+    
     //A sikeres üzenet
     this._success.subscribe((message) => this.successMessage = message);
     this._success.pipe(
@@ -142,11 +157,6 @@ export class LoginComponent implements OnInit {
     this._successUpload.pipe(
       debounceTime(3000)
     ).subscribe(() => this.successUpload = null);
-
-    this._alert.subscribe((message) => this.alertMessage = message);
-    this._alert.pipe(
-      debounceTime(7000)
-    ).subscribe(() => this.alertMessage = null);
   }
 
   public changeSuccessMessage(): void {
@@ -156,9 +166,5 @@ export class LoginComponent implements OnInit {
   public changeSuccessUploadMsg(): void {
     this._successUpload.next(`Épp feltöltjük a képet...`);
   }
-
-  public changeAlertMessage(msg: string): void {
-      this._alert.next(msg);
-    }
 }
 

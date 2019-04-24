@@ -31,9 +31,13 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/assets/sass/paper-kit.scss",
               "src/assets/css/demo.css",
-              "src/assets/css/nucleo-icons.css"
+              "src/assets/css/nucleo-icons.css",
+              "src/assets/css/font-awesome.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.js",
+              "node_modules/bootstrap/dist/js/bootstrap.js"
+            ],
             "es5BrowserSupport": true
           },
           "configurations": {
@@ -92,9 +96,13 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/assets/sass/paper-kit.scss",
               "src/assets/css/demo.css",
-              "src/assets/css/nucleo-icons.css"
+              "src/assets/css/nucleo-icons.css",
+              "src/assets/css/font-awesome.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.js",
+              "node_modules/bootstrap/dist/js/bootstrap.js"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"

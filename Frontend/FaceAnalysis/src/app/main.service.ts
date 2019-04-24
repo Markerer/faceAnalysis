@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppSettings } from './appsettings';
 import { VerifyResult } from './model/VerifyResult';
 import { DetectedFace } from './model/DetectedFace';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { jsonpCallbackContext, HttpClientJsonpModule } from '@angular/common/http/src/module';
 import { resolveComponentResources } from '@angular/core/src/metadata/resource_loading';
+
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,11 @@ export class MainService {
   constructor(private http: HttpClient) { }
 
 
-  public uploadAdminImage(uploadData: FormData): Observable<Object> {
-      return this.http.post(AppSettings.API_ROOT + '/admin', uploadData, {
+  public uploadAdminImage(uploadData: FormData): Observable<any> {
+    return this.http.post(AppSettings.API_ROOT + '/admin', uploadData, {
+      observe: 'response',
       responseType: 'text'
-     });
+    });
   }
 
   public deleteAdminImage(filename: string): Observable<Object> {

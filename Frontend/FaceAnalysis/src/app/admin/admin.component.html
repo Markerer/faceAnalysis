@@ -19,29 +19,25 @@
                  [formControl]="updateLoginLinkForm.get('loginLink')" />
         </div>
 
-        <div *ngIf="successLinkUpdateMessage" type="success" class="alert alert-success" (close)="successLinkUpdateMessage = null">
-          {{ successLinkUpdateMessage }}
-        </div>
-
         <button style="margin-top:20px;" type="submit" class="btn btn-primary btn-lg btn-block">Link frissítése</button>
       </form>
     </div>
 
-      <div *ngIf="successMessage" type="success" class="alert alert-success" (close)="successMessage = null">
-        {{ successMessage }}
-      </div>
+    <div *ngIf="successMessage" type="success" class="alert alert-success" (close)="successMessage = null">
+      {{ successMessage }}
+    </div>
 
-      <div class="bod">
-        <input type="file"
-               (change)="onFileChanged($event)"
-               accept="image/*">
-      </div>
-      <div style="margin-top:20px;">
-        <button class="btn btn-primary btn-lg"
-                (click)="uploadImage()">
-          Kép feltöltése
-        </button>
-      </div>
+    <div class="bod">
+      <input type="file"
+             (change)="onFileChanged($event)"
+             accept="image/*">
+    </div>
+    <div style="margin-top:20px;">
+      <button class="btn btn-primary btn-lg"
+              (click)="uploadImage()">
+        Kép feltöltése
+      </button>
+    </div>
 
   </div>
   <div class="container d-flex bod">
@@ -59,7 +55,6 @@
       </div>
     </div>
   </div>
-
 
 </body>
 </html>

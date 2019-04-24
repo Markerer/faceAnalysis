@@ -6,7 +6,8 @@ import { MainService } from '../main.service';
 import { FaceImage } from '../model/FaceImage';
 import { isUndefined } from 'util';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-
+import * as $ from 'jquery';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin',
@@ -17,9 +18,6 @@ export class AdminComponent implements OnInit {
 
   private _success = new Subject<string>();
   successMessage: string;
-
-  private _successLinkUpdate = new Subject<string>();
-  successLinkUpdateMessage: string;
 
   updateLoginLinkForm: FormGroup;
 
@@ -47,12 +45,6 @@ export class AdminComponent implements OnInit {
     this._success.pipe(
       debounceTime(5000)
     ).subscribe(() => this.successMessage = null);
-
-    //A sikeres üzenet
-    this._successLinkUpdate.subscribe((message) => this.successLinkUpdateMessage = message);
-    this._successLinkUpdate.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.successLinkUpdateMessage = null);
   }
 
   ngOnDestroy() {
@@ -63,13 +55,27 @@ export class AdminComponent implements OnInit {
     this._success.next(msg);
   }
 
-  public changeSuccessLinkUpdateMsg(): void {
-    this._successLinkUpdate.next("Link frissítése sikeres!");
+  // Másik fájl ki lett választva
+  onFileChanged(event) {
+    this.selectedFile = event.target.files[0];
   }
 
 
-  onFileChanged(event) {
-    this.selectedFile = event.target.files[0];
+  // Hiba esetén Modal dialog megnyitása
+  openDangerModal(msg: string) {
+    document.getElementById('dangerModalText').textContent = msg;
+    document.getElementById('openDangerModalButton').click();
+  }
+
+  // Sikeres Modal dialog megnyitása
+  openSuccessModal(msg: string) {
+    document.getElementById('successTitle').textContent = "Sikeres művelet!";
+    document.getElementById('successModalText').textContent = msg;
+    document.getElementById('openSuccessModalButton').click();
+
+    // valamiért sosem fut le a bezárás eventje a modalnak..., ezért kell ez
+    document.getElementById('successModalText').onclick = null;
+    document.getElementById('successModalText').style.cursor = "default";
   }
 
   // Kép feltöltése
@@ -79,10 +85,18 @@ export class AdminComponent implements OnInit {
       const uploadData = new FormData();
       uploadData.append('file', this.selectedFile, this.selectedFile.name);
       this.mainService.uploadAdminImage(uploadData).subscribe(object => {
-          console.log(object);
-        this.changeSuccessUploadMsg('A kép feltöltése sikeres!');
-        this.getImages();
-      });
+          this.openSuccessModal("A kép feltöltése sikeres volt!");
+          this.getImages();
+      }, error => {
+
+          var errorResponse = new HttpErrorResponse(error);
+          console.log(errorResponse.toString());
+          console.log(errorResponse.error);
+          if (errorResponse.status === 400) {
+            this.openDangerModal(`${errorResponse.error}`);
+          }
+
+        });
     }
   }
 
@@ -118,7 +132,7 @@ export class AdminComponent implements OnInit {
         loginLink = temp;
       }
       localStorage.setItem("loginLink", loginLink);
-      this.changeSuccessLinkUpdateMsg();
+      this.openSuccessModal("A link frissítve!");
     }
   }
 
