@@ -1,3 +1,3 @@
 export class AppSettings {
-  public static API_ROOT = 'http://localhost:8080/';
+  public static API_ROOT = 'https://faceanalysisbackend.herokuapp.com/';
 }

@@ -16,8 +16,8 @@ body, html {
 }
 
 button {
-  background-color: #1367AF;
-  color:white;
+  background-color: #7cb947;
+  color: white;
 }
 
 .resizableImage {
@@ -29,4 +29,11 @@ button {
 
 .centerAligned{
   text-align: center;
+}
+
+.inputbox{
+  max-width: 600px;
+  width: 60%;
+  margin: auto;
+  display: block;
 }

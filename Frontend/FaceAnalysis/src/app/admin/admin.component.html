@@ -13,13 +13,13 @@
           <input type="text"
                  id="loginLink"
                  value="{{loginLinkString}}"
-                 class="form-control"
+                 class="form-control inputbox"
                  [(ngModel)]="loginLink"
                  placeholder="Belépési link frissítése"
                  [formControl]="updateLoginLinkForm.get('loginLink')" />
         </div>
 
-        <button style="margin-top:20px;" type="submit" class="btn btn-primary btn-lg btn-block">Link frissítése</button>
+        <button style="margin-top:20px;" type="submit" class="btn btn-lg">Link frissítése</button>
       </form>
     </div>
 
@@ -33,7 +33,7 @@
              accept="image/*">
     </div>
     <div style="margin-top:20px;">
-      <button class="btn btn-primary btn-lg"
+      <button class="btn btn-lg"
               (click)="uploadImage()">
         Kép feltöltése
       </button>
@@ -48,7 +48,7 @@
           <!--d-flex kell, mert akkor lesz flexbox, aztán a justify horizontálisan középre, align pedig vertikálisan-->
           <div class="card-body align-items-center d-flex justify-content-center">
             <div class="text-center">
-              <a class="btn btn-primary btn-lg center middlebtn" style="background-color:#1367AF; color:white;" (click)="deleteAdminImage(myimage.id)">Kép törlése</a>
+              <a class="btn btn-lg center middlebtn" style="background-color:#7cb947; color:white;" (click)="deleteAdminImage(myimage.id)">Kép törlése</a>
             </div>
           </div>
         </div>
