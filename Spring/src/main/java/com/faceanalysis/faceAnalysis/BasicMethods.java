@@ -10,7 +10,7 @@ public class BasicMethods {
         // Run a java app in a separate system process
         Process proc = null;
         try {
-            String cmd = "java -jar faceAnalysis.jar ";
+            String cmd = "java -Dfile.encoding=UTF-8 -jar faceAnalysis.jar ";
             if (filename.contains("http")) {
                 cmd += filename;
             } else {
@@ -32,7 +32,7 @@ public class BasicMethods {
         // Run a java app in a separate system process
         Process proc = null;
         try {
-            String cmd = "java -jar faceAnalysis.jar ";
+            String cmd = "java -Dfile.encoding=UTF-8 -jar faceAnalysis.jar ";
             if (filename.contains("http")) {
                 cmd += filename;
             } else {
@@ -55,7 +55,7 @@ public class BasicMethods {
         // Run a java app in a separate system process
         Process proc = null;
         try {
-            String cmd = "java -jar faceAnalysis.jar ";
+            String cmd = "java -Dfile.encoding=UTF-8 -jar faceAnalysis.jar ";
             if(filename1.contains("http")){
                 cmd += filename1;
             } else {
@@ -85,7 +85,7 @@ public class BasicMethods {
         // Run a java app in a separate system process
         Process proc = null;
         try {
-            String cmd = "java -jar faceAnalysis.jar ";
+            String cmd = "java -Dfile.encoding=UTF-8 -jar faceAnalysis.jar ";
 
             cmd += id1 + " " + id2;
 
