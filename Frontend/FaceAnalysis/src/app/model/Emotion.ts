@@ -1,10 +1,12 @@
+import utf8 from 'utf8';
+
 export class Emotion {
   Name: string;
   Value: string;
 
   constructor (em: Emotion){
-    this.Name = em.Name;
-    this.Value = em.Value;
+    this.Name = utf8.decode(em.Name);
+    this.Value = utf8.decode(em.Value);
   }
 
   public toString(): string {

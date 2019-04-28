@@ -1,12 +1,14 @@
+import utf8 from 'utf8';
+
 export class Occlusion {
   ForeheadOccluded: string;
   EyeOccluded: string;
   MouthOccluded: string;
 
   constructor(occ: Occlusion){
-    this.ForeheadOccluded = occ.ForeheadOccluded;
-    this.EyeOccluded = occ.EyeOccluded;
-    this.MouthOccluded = occ.MouthOccluded;
+    this.ForeheadOccluded = utf8.decode(occ.ForeheadOccluded);
+    this.EyeOccluded = utf8.decode(occ.EyeOccluded);
+    this.MouthOccluded = utf8.decode(occ.MouthOccluded);
   }
 
   public toString(): string {

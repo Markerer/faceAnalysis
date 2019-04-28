@@ -1,3 +1,5 @@
+import utf8 from 'utf8';
+
 export class FaceImage {
   link: string;
   id: string;

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import utf8 from 'utf8';
 
 @Component({
   selector: 'app-home',
