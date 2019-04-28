@@ -124,11 +124,13 @@ export class FaceAnalysisComponent implements OnInit {
         for (var df of response) {
           str="";
           console.log(" indexof df : " + response.indexOf(df));
-          str += "\n" + (response.indexOf(df)+1)  + ". arc\n\n";
           str += df.toString();
           str += "\n";
           this.analText.push(str);
         }
+
+        var card = document.getElementById("card");
+        card.hidden=false;
         this.actualFaceNumber=0;
         this.changeAnalyisMessage(this.actualFaceNumber);
         this.drawFace(this.actualFaceNumber);

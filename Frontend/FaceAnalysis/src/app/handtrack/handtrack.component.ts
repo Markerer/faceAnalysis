@@ -43,7 +43,7 @@ export class HandtrackComponent implements OnInit {
     handTrack.load(HandtrackComponent.modelParams).then(lmodel => {
       // detect objects in the image.
       HandtrackComponent.model = lmodel
-      HandtrackComponent.updateNote.innerText = "Loaded Model!"
+      HandtrackComponent.updateNote.innerText = "Model betöltve!"
       HandtrackComponent.trackButton.disabled = false;
   });
   }
@@ -56,11 +56,11 @@ export class HandtrackComponent implements OnInit {
     handTrack.startVideo(HandtrackComponent.video).then(function (status) {
         console.log("video started", status);
         if (status) {
-            HandtrackComponent.updateNote.innerText = "Video started. Now tracking"
+            HandtrackComponent.updateNote.innerText = "Videó elindult. Kéz követése"
             HandtrackComponent.isVideo = true
             HandtrackComponent.runDetection()
         } else {
-            HandtrackComponent.updateNote.innerText = "Please enable video"
+            HandtrackComponent.updateNote.innerText = "Kérlek engedélyezd a videót!"
         }
     });
 }
@@ -86,13 +86,13 @@ static runDetectionImage(img) {
 
 toggleVideo() {
     if (!HandtrackComponent.isVideo) {
-        HandtrackComponent.updateNote.innerText = "Starting video"
+        HandtrackComponent.updateNote.innerText = "Videó indítása"
         this.startVideo();
     } else {
-        HandtrackComponent.updateNote.innerText = "Stopping video"
+        HandtrackComponent.updateNote.innerText = "Videó leállítása"
         handTrack.stopVideo(HandtrackComponent.video)
         HandtrackComponent.isVideo = false;
-        HandtrackComponent.updateNote.innerText = "Video stopped"
+        HandtrackComponent.updateNote.innerText = "Videó leállt"
     }
 }
 
