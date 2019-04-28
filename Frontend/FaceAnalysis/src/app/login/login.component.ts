@@ -135,7 +135,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  onNavigate(event) {
+  onNavigate() {
     console.log("katt on link");
     var textInTheLink = document.getElementById('successModalText').textContent;
     console.log(textInTheLink);

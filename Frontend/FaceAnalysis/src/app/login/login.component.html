@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <body class="bod">
-  <app-camera (pictureTaken)="handleImage($event)" (cameraOpened)="handleCameraOpened($event)" ></app-camera>
+  <app-camera (pictureTaken)="handleImage($event)" (cameraOpened)="handleCameraOpened()" ></app-camera>
 
-  <div (window:resize)="onResize($event)" style="text-align:center" class="snapshot" *ngIf="webcamImage">
-    <img src="{{webcamImage.imageAsDataUrl}}" id="latestImage"/>
+  <div style="text-align:center" class="snapshot" *ngIf="webcamImage">
+    <img src="{{webcamImage.imageAsDataUrl}}" id="latestImage" class="resizableImage"/>
   </div>
   <br>
   <div class="centerAligned">
     <div>
       <p id="mostSimilarText" style="font-size:x-large; font-weight:bold; visibility:hidden;">A leghasonlóbb kép:</p>
-      <img id="mostSimilarFace" src="{{lastVerifyResult.Image}}" />
+      <img id="mostSimilarFace" class="resizableImage" src="{{lastVerifyResult.Image}}" />
     </div>
     <div *ngIf="successUpload" type="success" class="alert alert-success" (close)="successUpload = null">
       {{ successUpload }}
