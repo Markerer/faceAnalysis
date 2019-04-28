@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MainService } from '../main.service';
-
 import { WebcamImage } from 'ngx-webcam';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
