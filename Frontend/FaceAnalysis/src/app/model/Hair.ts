@@ -1,12 +1,14 @@
+import utf8 from 'utf8';
+
 export class Hair {
   HairColor: string;
   IsInvisible: string;
   IsBald: string;
 
   constructor (h:Hair) {
-    this.HairColor = h.HairColor;
-    this.IsInvisible = h.IsInvisible;
-    this.IsBald = h.IsBald;
+    this.HairColor = utf8.decode(h.HairColor);
+    this.IsInvisible = utf8.decode(h.IsInvisible);
+    this.IsBald = utf8.decode(h.IsBald);
   }
   public toString(): string {
     var ret = "";

@@ -3,6 +3,7 @@ import { FacialHair } from './FacialHair';
 import { Hair } from './Hair';
 import { Makeup } from './Makeup';
 import { Occlusion } from './Occlusion';
+import utf8 from 'utf8';
 
 export  class DetectedFace {
 
@@ -19,7 +20,7 @@ export  class DetectedFace {
   FaceRectangle: number[];
 
   constructor(face: DetectedFace){
-    this.Accessories = face.Accessories;
+    this.Accessories = utf8.decode(face.Accessories);
     this.Emotions = [];
     for (let em of face.Emotions){
       this.Emotions.push(new Emotion(em));
@@ -29,9 +30,9 @@ export  class DetectedFace {
     this.Makeup = new Makeup(face.Makeup);
     this.Occlusion = new Occlusion(face.Occlusion);
     this.Age = face.Age;
-    this.Gender = face.Gender;
-    this.Smile = face.Smile;
-    this.Glasses = face.Glasses;
+    this.Gender = utf8.decode(face.Gender);
+    this.Smile = utf8.decode(face.Smile);
+    this.Glasses = utf8.decode(face.Glasses);
     this.FaceRectangle = face.FaceRectangle;
   }
 

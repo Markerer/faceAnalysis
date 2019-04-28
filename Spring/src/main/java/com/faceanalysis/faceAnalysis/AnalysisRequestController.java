@@ -149,7 +149,7 @@ public class AnalysisRequestController {
                 }
                 // a beadott kép törlése a szerverről és az adatbázisból is
                 storageService.deleteOne(filename);
-                adminService.delete(tryer.id);
+                adminService.deleteByFilename(filename);
                 return ResponseEntity.ok(mostSimilarJsonObject.toString());
         } else {
             return ResponseEntity.badRequest().body("A megadott fájl nem létezik a szerverünkön!");
@@ -170,10 +170,10 @@ public class AnalysisRequestController {
     }
 
 
-    // 6 óráként az admin faceId-k begyűjtése, kezdeti késleltetés szükséges, mert anélkül valamiért
+    // 1 óráként az admin faceId-k begyűjtése, kezdeti késleltetés szükséges, mert anélkül valamiért
     // figyelem kívül hagyja a mappaváltást és rossz mappát kezd el átnézni
     // a késleltetések mértékegysége ms
-    @Scheduled(fixedRate = 21600000, initialDelay = 1000)
+    @Scheduled(fixedRate = 3600000, initialDelay = 1000)
     public void refreshAdminFaceIds() {
         storageService.changeRootLocation("admin-upload-dir");
         // adatbázis ürítése

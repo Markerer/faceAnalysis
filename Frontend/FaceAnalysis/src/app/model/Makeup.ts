@@ -1,10 +1,12 @@
+import utf8 from 'utf8';
+
 export class Makeup {
   EyeMakeup: string;
   LipMakeup: string;
 
 constructor (m:Makeup) {
-  this.EyeMakeup = m.EyeMakeup;
-  this.LipMakeup = m.LipMakeup;
+  this.EyeMakeup = utf8.decode(m.EyeMakeup);
+  this.LipMakeup = utf8.decode(m.LipMakeup);
 }
 
   public toString(): string {
