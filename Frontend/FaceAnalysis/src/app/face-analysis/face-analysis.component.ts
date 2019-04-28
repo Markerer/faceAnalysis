@@ -186,6 +186,7 @@ export class FaceAnalysisComponent implements OnInit {
 
   onAnalyseButtonClicked(){
     if (this.webcamImage != null) {
+      this.analText= [];
       this.uploadImage();
     }
   }
