@@ -34,16 +34,31 @@ export class FaceAnalysisComponent implements OnInit {
     FaceAnalysisComponent.ctx = FaceAnalysisComponent.ct.getContext("2d");
     if (windowWidth > 600) {
       FaceAnalysisComponent.ct.width = 600;
-      FaceAnalysisComponent.ct.height = 450;
+      FaceAnalysisComponent.ct.height = FaceAnalysisComponent.ct.width / this.aspectRatio;
     } else if(windowWidth > 1000) {
       FaceAnalysisComponent.ct.width = 1000;
-      FaceAnalysisComponent.ct.height = 750;
+      FaceAnalysisComponent.ct.height = FaceAnalysisComponent.ct.width / this.aspectRatio;
     } else {
       FaceAnalysisComponent.ct.width = windowWidth;
-      FaceAnalysisComponent.ct.height = (windowWidth / 1.4);
+      FaceAnalysisComponent.ct.height = (windowWidth / this.aspectRatio);
     }
+    console.log("width after init:" + FaceAnalysisComponent.ct.width +  " height after init" + FaceAnalysisComponent.ct.height);
   }
 
+  manualResize(){
+    var windowWidth = (window.innerWidth * 0.8);
+    if (windowWidth > 600) {
+      FaceAnalysisComponent.ct.width = 600;
+      FaceAnalysisComponent.ct.height = FaceAnalysisComponent.ct.width / this.aspectRatio;
+    } else if(windowWidth > 1000) {
+      FaceAnalysisComponent.ct.width = 1000;
+      FaceAnalysisComponent.ct.height = FaceAnalysisComponent.ct.width / this.aspectRatio;
+    } else {
+      FaceAnalysisComponent.ct.width = windowWidth;
+      FaceAnalysisComponent.ct.height = (windowWidth / this.aspectRatio);
+    }
+    console.log("width after init:" + FaceAnalysisComponent.ct.width +  " height after init" + FaceAnalysisComponent.ct.height);
+  }
 
   constructor(private mainService: MainService) {}
 
@@ -65,6 +80,8 @@ export class FaceAnalysisComponent implements OnInit {
   x = 1;
   y = 1;
 
+  aspectRatio = 1.45;
+
   // latest snapshot
   public webcamImage: WebcamImage = null;
 
@@ -75,6 +92,10 @@ export class FaceAnalysisComponent implements OnInit {
     var ez = this;
     this.img.onload = function() {
       FaceAnalysisComponent.ctx.drawImage(ez.img,0,0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
+      console.log(ez.img.height + "  " + ez.img.width);
+      ez.setAspectRatio(ez.img.width, ez.img.height);
+      ez.manualResize();
+      ez.resetPicture();
     };
     this.img.src=this.webcamImage.imageAsDataUrl;
     this.resetPicture();
@@ -82,6 +103,10 @@ export class FaceAnalysisComponent implements OnInit {
     this.hideAnalysisMessage();
   }
 
+  setAspectRatio(imgWidth: number, imgHeight: number){
+    this.aspectRatio = (imgWidth / imgHeight);
+    console.log("new aspect ratio:" + this.aspectRatio);
+  }
   
   // Másik fájl ki lett választva
   onFileChanged(event) {
@@ -103,6 +128,10 @@ export class FaceAnalysisComponent implements OnInit {
         var ez = this;
         this.img.onload = function() {
           FaceAnalysisComponent.ctx.drawImage(ez.img,0,0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
+          console.log(ez.img.height + "  " + ez.img.width);
+          ez.setAspectRatio(ez.img.width, ez.img.height);
+          ez.manualResize();
+          ez.resetPicture();
         };
         this.img.src = event.target.result;
         this.resetPicture();
@@ -216,6 +245,8 @@ export class FaceAnalysisComponent implements OnInit {
     this.x = FaceAnalysisComponent.ct.width / this.img.width;
     this.y = FaceAnalysisComponent.ct.height / this.img.height;
     let response = <DetectedFace[]> FaceAnalysisComponent.lastResponse;
+    FaceAnalysisComponent.ctx.strokeStyle = "#7cb947";
+    FaceAnalysisComponent.ctx.lineWidth = 8;
     FaceAnalysisComponent.ctx.strokeRect(
       response[number].FaceRectangle[0] * this.x,
       response[number].FaceRectangle[1] * this.y,
@@ -264,20 +295,20 @@ export class FaceAnalysisComponent implements OnInit {
     var windowWidth = (event.target.innerWidth * 0.8);
     if (windowWidth > 600) {
       FaceAnalysisComponent.ct.width = 600;
-      FaceAnalysisComponent.ct.height = 430;
+      FaceAnalysisComponent.ct.height = FaceAnalysisComponent.ct.width / this.aspectRatio;
     } else if(windowWidth > 1000) {
       FaceAnalysisComponent.ct.width = 1000;
-      FaceAnalysisComponent.ct.height = 750;
+      FaceAnalysisComponent.ct.height = FaceAnalysisComponent.ct.width / this.aspectRatio;
     } else {
       FaceAnalysisComponent.ct.width = windowWidth;
-      FaceAnalysisComponent.ct.height = (windowWidth / 1.4);
+      FaceAnalysisComponent.ct.height = (windowWidth / this.aspectRatio);
     }
     this.resetPicture();
     if(FaceAnalysisComponent.lastResponse.length > 0){
       this.changeAnalyisMessage(this.actualFaceNumber);
       this.drawFace(this.actualFaceNumber);
     }
-    
+    console.log("width after resize:" + FaceAnalysisComponent.ct.width +  " height after resize" + FaceAnalysisComponent.ct.height);
   }
 }
 
