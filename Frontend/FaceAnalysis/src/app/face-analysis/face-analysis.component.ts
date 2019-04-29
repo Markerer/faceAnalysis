@@ -24,18 +24,33 @@ export class FaceAnalysisComponent implements OnInit {
   ngOnInit() {
     this._success.subscribe((message) => this.successMessage = message);
     this._success.pipe(
-      debounceTime(5000)
+      debounceTime(3500)
     ).subscribe(() => this.successMessage = null);
   }
 
   ngAfterViewInit(){
+    var windowWidth = (window.innerWidth * 0.8);
+    FaceAnalysisComponent.ct  = <HTMLCanvasElement> document.getElementById("ct");
+    FaceAnalysisComponent.ctx = FaceAnalysisComponent.ct.getContext("2d");
+    if (windowWidth > 600) {
+      FaceAnalysisComponent.ct.width = 600;
+      FaceAnalysisComponent.ct.height = 450;
+    } else if(windowWidth > 1000) {
+      FaceAnalysisComponent.ct.width = 1000;
+      FaceAnalysisComponent.ct.height = 750;
+    } else {
+      FaceAnalysisComponent.ct.width = windowWidth;
+      FaceAnalysisComponent.ct.height = (windowWidth / 1.4);
+    }
   }
 
 
   constructor(private mainService: MainService) {}
 
 
-  static lastResponse = {};
+  pictureChosen: boolean = false;
+
+  static lastResponse = [];
 
   static ct  = <HTMLCanvasElement> document.getElementById("ct");
   static ctx = null;
@@ -44,6 +59,11 @@ export class FaceAnalysisComponent implements OnInit {
   faceNumber: number;
   actualFaceNumber : number = 0;
   analText = [];
+
+  uploadedFile: File;
+
+  x = 1;
+  y = 1;
 
   // latest snapshot
   public webcamImage: WebcamImage = null;
@@ -54,14 +74,41 @@ export class FaceAnalysisComponent implements OnInit {
     FaceAnalysisComponent.ctx = FaceAnalysisComponent.ct.getContext("2d");
     var ez = this;
     this.img.onload = function() {
-      FaceAnalysisComponent.ctx.drawImage(ez.img,0,0);
+      FaceAnalysisComponent.ctx.drawImage(ez.img,0,0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
     };
     this.img.src=this.webcamImage.imageAsDataUrl;
     this.resetPicture();
+    this.pictureChosen = true;
+    this.hideAnalysisMessage();
   }
 
+  
+  // Másik fájl ki lett választva
+  onFileChanged(event) {
+    if (event.target.files && event.target.files[0]) {
+      var reader: any;
+      target: EventTarget;
+      reader = new FileReader();
 
-  selectedFile: ImageSnippet;
+      this.pictureChosen = true;
+      this.uploadedFile = event.target.files[0];
+      this.webcamImage = null;
+      this.hideAnalysisMessage();
+
+      reader.readAsDataURL(event.target.files[0]); // read file as data url
+
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        FaceAnalysisComponent.ct  = <HTMLCanvasElement> document.getElementById("ct");
+        FaceAnalysisComponent.ctx = FaceAnalysisComponent.ct.getContext("2d");
+        var ez = this;
+        this.img.onload = function() {
+          FaceAnalysisComponent.ctx.drawImage(ez.img,0,0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
+        };
+        this.img.src = event.target.result;
+        this.resetPicture();
+      }
+    }
+  }
 
   // Hiba esetén Modal dialog megnyitása
   openDangerModal(msg: string) {
@@ -80,20 +127,26 @@ export class FaceAnalysisComponent implements OnInit {
   }
 
 
-  uploadImage() {
+  uploadImage(uploadedFile?: File) {
     const formData = new FormData();
 
-    var base64 = this.webcamImage.imageAsBase64;
-    const date = new Date().valueOf();
+    if(uploadedFile === undefined || uploadedFile === null){
+      var base64 = this.webcamImage.imageAsBase64;
+      const date = new Date().valueOf();
 
-    // Replace extension according to your media type
-    const imageName = date + '.jpg';
-    this.lastFileName = imageName;
-    // call method that creates a blob from dataUri
-    const imageBlob = this.dataURItoBlob(base64);
-    const imageFile = new File([imageBlob], imageName, { type: 'image/jpg' });
-    formData.append('file', imageFile, imageFile.name);
-
+      // Replace extension according to your media type
+      const imageName = date + '.jpg';
+      this.lastFileName = imageName;
+      // call method that creates a blob from dataUri
+      const imageBlob = this.dataURItoBlob(base64);
+      const imageFile = new File([imageBlob], imageName, { type: 'image/jpg' });
+      formData.append('file', imageFile, imageFile.name);
+    } else {
+      console.log(uploadedFile.size);
+      formData.append('file', uploadedFile, uploadedFile.name);
+      this.lastFileName = uploadedFile.name;
+    }
+    this.changeSuccessMessage("Épp feltöltjük a képet...");
     this.mainService.uploadImage(formData).subscribe(response => {
       console.log(response);
       this.runFaceAnalysis();
@@ -111,7 +164,7 @@ export class FaceAnalysisComponent implements OnInit {
 
   runFaceAnalysis() {
     var az = this;
-    this.changeSuccessMessage();
+    this.changeSuccessMessage("Dolgozunk a kérésen...");
     this.mainService.getFaceAnalysis(this.lastFileName).subscribe(
       response => {
         FaceAnalysisComponent.lastResponse = response;
@@ -127,6 +180,8 @@ export class FaceAnalysisComponent implements OnInit {
           str += "\n";
           this.analText.push(str);
         }
+        
+        this.openSuccessModal("Az arc(ok) elemezése megtörtént, görgess le a részletekért!");
 
         var card = document.getElementById("card");
         card.hidden=false;
@@ -154,13 +209,18 @@ export class FaceAnalysisComponent implements OnInit {
   }
 
   resetPicture(){
-    FaceAnalysisComponent.ctx.drawImage(this.img,0,0);
+    FaceAnalysisComponent.ctx.drawImage(this.img,0,0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
   }
 
   drawFace(number: number){
+    this.x = FaceAnalysisComponent.ct.width / this.img.width;
+    this.y = FaceAnalysisComponent.ct.height / this.img.height;
     let response = <DetectedFace[]> FaceAnalysisComponent.lastResponse;
-    FaceAnalysisComponent.ctx.strokeRect(response[number].FaceRectangle[0],response[number].FaceRectangle[1],
-      response[number].FaceRectangle[2],response[number].FaceRectangle[3]);
+    FaceAnalysisComponent.ctx.strokeRect(
+      response[number].FaceRectangle[0] * this.x,
+      response[number].FaceRectangle[1] * this.y,
+      response[number].FaceRectangle[2] * this.x,
+      response[number].FaceRectangle[3] * this.y);
   }
 
   changeAnalyisMessage(num: number){
@@ -168,8 +228,15 @@ export class FaceAnalysisComponent implements OnInit {
     div.textContent = this.analText[num];
     }
 
-  public changeSuccessMessage(): void {
-    this._success.next(`Dolgozunk a kérésen...`);
+  hideAnalysisMessage(){
+    var card = document.getElementById("card");
+    if(card != null && card != undefined){
+        card.hidden = true;
+    }
+  }
+
+  public changeSuccessMessage(msg: string): void {
+    this._success.next(msg);
   }
 
   dataURItoBlob(dataURI) {
@@ -187,8 +254,30 @@ export class FaceAnalysisComponent implements OnInit {
     if (this.webcamImage != null) {
       this.analText= [];
       this.uploadImage();
+    } else if(this.uploadedFile != null && this.uploadedFile != undefined){
+      this.analText = [];
+      this.uploadImage(this.uploadedFile);
     }
   }
 
+  onResize(event) {
+    var windowWidth = (event.target.innerWidth * 0.8);
+    if (windowWidth > 600) {
+      FaceAnalysisComponent.ct.width = 600;
+      FaceAnalysisComponent.ct.height = 430;
+    } else if(windowWidth > 1000) {
+      FaceAnalysisComponent.ct.width = 1000;
+      FaceAnalysisComponent.ct.height = 750;
+    } else {
+      FaceAnalysisComponent.ct.width = windowWidth;
+      FaceAnalysisComponent.ct.height = (windowWidth / 1.4);
+    }
+    this.resetPicture();
+    if(FaceAnalysisComponent.lastResponse.length > 0){
+      this.changeAnalyisMessage(this.actualFaceNumber);
+      this.drawFace(this.actualFaceNumber);
+    }
+    
+  }
 }
 

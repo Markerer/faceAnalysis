@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <body class="bod">
+  <body class="bod" (window:resize)="onResize($event)">
     <div *ngIf="selectedFile" class="img-preview-container">
       <div
         class="img-preview{{ selectedFile.status === 'fail' ? '-error' : '' }}"
@@ -19,13 +19,22 @@
       </div>
     </div>
 
+    <div>
+      <input type="file"
+             (change)="onFileChanged($event)"
+             accept="image/*">
+    </div>
+    <div>
+      <p style="font-size:x-large; font-weight:bold; margin-top: 20px;">Vagy:</p>
+    </div>
+
     <app-camera (pictureTaken)="handleImage($event)"></app-camera>
 
     <div style="text-align:center" class="snapshot">
       <canvas id="ct" width="600" height="500"></canvas>
     </div>
 
-    <div style="text-align:center" class="snapshot" *ngIf="webcamImage">
+    <div style="text-align:center" class="snapshot" *ngIf="pictureChosen">
       <button
         id="btn"
         class="btn btn-default"
@@ -59,7 +68,7 @@
       >
         {{ successMessage }}
       </div>
-      <div style="text-align:center" id="card" class="snapshot" *ngIf="webcamImage" hidden="true">
+      <div style="text-align:center" id="card" class="snapshot" *ngIf="pictureChosen" hidden="true">
         <br />
         <div
           class="card text-white border-secondary mb-3"
