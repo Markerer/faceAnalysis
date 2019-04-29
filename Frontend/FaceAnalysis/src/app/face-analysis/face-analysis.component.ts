@@ -89,6 +89,7 @@ export class FaceAnalysisComponent implements OnInit {
     this.webcamImage = webcamImage;
     FaceAnalysisComponent.ct  = <HTMLCanvasElement> document.getElementById("ct");
     FaceAnalysisComponent.ctx = FaceAnalysisComponent.ct.getContext("2d");
+    FaceAnalysisComponent.lastResponse.splice(0);
     var ez = this;
     this.img.onload = function() {
       FaceAnalysisComponent.ctx.drawImage(ez.img,0,0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
@@ -125,6 +126,7 @@ export class FaceAnalysisComponent implements OnInit {
       reader.onload = (event) => { // called once readAsDataURL is completed
         FaceAnalysisComponent.ct  = <HTMLCanvasElement> document.getElementById("ct");
         FaceAnalysisComponent.ctx = FaceAnalysisComponent.ct.getContext("2d");
+        FaceAnalysisComponent.lastResponse.splice(0);
         var ez = this;
         this.img.onload = function() {
           FaceAnalysisComponent.ctx.drawImage(ez.img,0,0, FaceAnalysisComponent.ct.width, FaceAnalysisComponent.ct.height);
@@ -246,7 +248,7 @@ export class FaceAnalysisComponent implements OnInit {
     this.y = FaceAnalysisComponent.ct.height / this.img.height;
     let response = <DetectedFace[]> FaceAnalysisComponent.lastResponse;
     FaceAnalysisComponent.ctx.strokeStyle = "#7cb947";
-    FaceAnalysisComponent.ctx.lineWidth = 8;
+    FaceAnalysisComponent.ctx.lineWidth = 6;
     FaceAnalysisComponent.ctx.strokeRect(
       response[number].FaceRectangle[0] * this.x,
       response[number].FaceRectangle[1] * this.y,
