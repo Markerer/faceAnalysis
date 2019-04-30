@@ -24,16 +24,32 @@ export class AdminComponent implements OnInit {
   faceImages: FaceImage[];
 
   loginLinkString: string;
+  instantRedirect: boolean;
 
   selectedFile: File;
 
   constructor(private fb: FormBuilder, private mainService: MainService) {
     this.updateLoginLinkForm = fb.group({
-      'loginLink': ["", Validators.required]
+      'loginLink': ['', Validators.required],
+      'instantRedirect': ['']
     });
 
     this.loginLinkString = localStorage.getItem("loginLink");
+    this.instantRedirect = JSON.parse(localStorage.getItem("instantRedirect"));
   }
+
+  onChanges() {
+    this.updateLoginLinkForm.get('loginLink').valueChanges
+    .subscribe(loginLink => {
+        if (loginLink === '' || loginLink.length === 0) {
+            this.updateLoginLinkForm.get('instantRedirect').reset();
+            this.updateLoginLinkForm.get('instantRedirect').disable();
+        }
+        else {
+            this.updateLoginLinkForm.get('instantRedirect').enable();
+        }
+    });
+}
 
   ngOnInit() {
 
@@ -45,6 +61,8 @@ export class AdminComponent implements OnInit {
     this._success.pipe(
       debounceTime(5000)
     ).subscribe(() => this.successMessage = null);
+
+    this.onChanges();
   }
 
   ngOnDestroy() {
@@ -124,13 +142,15 @@ export class AdminComponent implements OnInit {
   }
 
 
-  updateLoginLink(loginLink: string) {
+  updateLoginLink(loginLink: string, instantRedirect: boolean) {
     if (loginLink != undefined || loginLink != null) {
-      if (!loginLink.includes('http')) {
+      if (!loginLink.includes('http') && loginLink.length > 0) {
         var temp = 'https://';
         temp += loginLink;
         loginLink = temp;
       }
+      this.loginLinkString = loginLink;
+      localStorage.setItem("instantRedirect", JSON.stringify(instantRedirect));
       localStorage.setItem("loginLink", loginLink);
       this.openSuccessModal("A link frissítve!");
     }

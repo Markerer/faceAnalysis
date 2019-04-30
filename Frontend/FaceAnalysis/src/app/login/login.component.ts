@@ -54,7 +54,6 @@ export class LoginComponent implements OnInit {
     document.getElementById('successModalText').style.cursor = "pointer";
     document.getElementById('successModalText').onclick = this.onNavigate;
     document.getElementById('openSuccessModalButton').click();
-    
   }
 
   uploadImage() {
@@ -100,6 +99,11 @@ export class LoginComponent implements OnInit {
 
 
   onSuccessfulLogin() {
+    var instantRedirect = JSON.parse(localStorage.getItem("instantRedirect"));
+    if(instantRedirect){
+      console.log(instantRedirect);
+      this.onNavigate();  
+    }
     document.getElementById('mostSimilarText').style.visibility = "visible";
     var linkURI = localStorage.getItem("loginLink");
     this.openSuccessModal(linkURI);
@@ -137,6 +141,9 @@ export class LoginComponent implements OnInit {
 
   onNavigate() {
     console.log("katt on link");
+    if(JSON.parse(localStorage.getItem("instantRedirect"))){
+      window.open(localStorage.getItem("loginLink"), "_self");
+    }
     var textInTheLink = document.getElementById('successModalText').textContent;
     console.log(textInTheLink);
     if (textInTheLink === localStorage.getItem("loginLink")) {
