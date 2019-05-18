@@ -6,20 +6,32 @@
     <div style="margin-top:100px">
       <form [formGroup]="updateLoginLinkForm"
             (ngSubmit)="updateLoginLink(
-              updateLoginLinkForm.get('loginLink').value)"
-            class="form" method="" action=""
-            [class.error]="!updateLoginLinkForm.valid && updateLoginLinkForm.touched">
+              updateLoginLinkForm.get('loginLink').value,
+              updateLoginLinkForm.get('instantRedirect').value)"
+            class="form" method="" action="">
         <div>
           <input type="text"
                  id="loginLink"
                  value="{{loginLinkString}}"
                  class="form-control inputbox"
-                 [(ngModel)]="loginLink"
+                 [(ngModel)]="loginLinkString"
                  placeholder="Belépési link frissítése"
                  [formControl]="updateLoginLinkForm.get('loginLink')" />
         </div>
+        <div class="form-check" style="margin-top:10px;">
+          <label class="form-check-label">
+            <input type="checkbox"
+            id="instantRedirect"
+            value="{{instantRedirect}}"
+            class="form-check-input"
+            [(ngModel)]="instantRedirect"
+            [formControl]="updateLoginLinkForm.get('instantRedirect')" />
+            Azonnali átirányítás
+            <span class="form-check-sign"></span>
+          </label>
+        </div>
 
-        <button style="margin-top:20px;" type="submit" class="btn btn-lg">Link frissítése</button>
+        <button style="margin-top:10px;" type="submit" class="btn btn-lg">Link frissítése</button>
       </form>
     </div>
 
