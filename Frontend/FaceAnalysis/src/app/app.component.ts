@@ -12,7 +12,7 @@ export class AppComponent {
 
   constructor() {
     $(document).on('hidden.bs.modal', '#ModalSuccess', function () {
-      console.log("mynigga1");
+      console.log("App component is doing fine.");
       document.getElementById('successModalText').onclick = null;
       document.getElementById('successModalText').style.cursor = "default";
     });
