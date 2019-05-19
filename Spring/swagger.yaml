@@ -8,7 +8,7 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0'
-host: 'localhost:8080'
+host: 'faceanalysisbackend.herokuapp.com'
 basePath: /
 tags:
   - name: analysis-request-controller
